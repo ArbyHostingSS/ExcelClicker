@@ -32,11 +32,32 @@
             text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
         }
 
+        .subtitle-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
         .subtitle {
             color: #444;
-            margin-bottom: 20px;
             font-style: italic;
             font-weight: 500;
+        }
+
+        /* Tombol Piala Achievements */
+        .trophy-btn {
+            background-color: #ffb900;
+            border: none;
+            font-size: 22px;
+            padding: 8px 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+        .trophy-btn:hover {
+            transform: scale(1.1) rotate(10deg);
         }
 
         .rank-badge {
@@ -157,6 +178,67 @@
             padding-bottom: 3px;
         }
 
+        /* TAMPILAN POP-UP MODAL ACHIEVEMENTS */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 25px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        .close-btn:hover { color: #333; }
+
+        .achievement-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 5px solid #ccc;
+        }
+
+        .achievement-row.unlocked {
+            border-left-color: #ffb900;
+            background: #fffdf3;
+        }
+
+        .ach-icon { font-size: 24px; }
+        .ach-details { display: flex; flex-direction: column; }
+        .ach-title { font-weight: bold; font-size: 14px; }
+        .ach-desc { font-size: 12px; color: #666; }
+
         .system-footer {
             margin-top: 30px;
             display: flex;
@@ -170,7 +252,12 @@
 <body>
 
     <h1>Excel Clicker 🧮</h1>
-    <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
+    
+    <div class="subtitle-container">
+        <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
+        <!-- Tombol Piala -->
+        <button class="trophy-btn" onclick="openAchievements()" title="Lihat Pencapaian">🏆</button>
+    </div>
     
     <div class="rank-badge">Jabatan: <span id="rank-text">Anak Magang Fotokopi</span></div>
 
@@ -202,6 +289,17 @@
         </div>
     </div>
 
+    <!-- JENDELA POP-UP ACHIEVEMENTS -->
+    <div id="ach-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeAchievements()">&times;</span>
+            <h3 style="color:#107c41; margin-top: 0; border-bottom: 2px solid #ffb900; padding-bottom: 10px;">🏆 Ruang Pencapaian</h3>
+            <div id="achifications-list">
+                <!-- Daftar achievement akan dibuat otomatis lewat JavaScript -->
+            </div>
+        </div>
+    </div>
+
     <div class="system-footer">
         <span class="save-status" id="save-status">Progress dimuat...</span>
         <button class="reset-btn" onclick="resetGame()">Reset Game</button>
@@ -219,7 +317,6 @@
             appId: "1:14164257498:web:8067ac5d301f447e95d3e3",
             measurementId: "G-J0B5DSHNDJ"
         };
-        // ======================================================
 
         // Inisialisasi Firebase
         firebase.initializeApp(firebaseConfig);
@@ -239,12 +336,21 @@
             4: { cost: 3000, dps: 100, level: 0, baseCost: 3000 }
         };
 
+        // Daftar Aturan Achievement
+        const achievementRules = [
+            { id: "ach_1", req: 100, name: "Karyawan Baru Teladan", desc: "Berhasil menginput 100 baris data.", icon: "📝" },
+            { id: "ach_2", req: 5000, name: "Master Capek Jempol", desc: "Berhasil menginput 5.000 baris data.", icon: "⚡" },
+            { id: "ach_3", req: 50000, name: "Dewa Excel Sukabumi", desc: "Berhasil menginput 50.000 baris data.", icon: "🔥" },
+            { id: "ach_4", req: 500000, name: "Penguasa Korporat Gabut", desc: "Mencapai total 500.000 baris data.", icon: "👑" }
+        ];
+
         const dataCountEl = document.getElementById('data-count');
         const dpsCountEl = document.getElementById('dps-count');
         const clickBtn = document.getElementById('excel-btn');
         const rankTextEl = document.getElementById('rank-text');
         const saveStatusEl = document.getElementById('save-status');
         const playtimeTextEl = document.getElementById('playtime-text');
+        const achModal = document.getElementById('ach-modal');
 
         function formatTime(seconds) {
             if (seconds < 60) return seconds + "s";
@@ -355,6 +461,45 @@
             for (let id in upgrades) {
                 const btn = document.getElementById(`up${id}-btn`);
                 btn.disabled = dataInputted < upgrades[id].cost;
+            }
+        }
+
+        /* FUNGSI KONTROL POPUP ACHIEVEMENT */
+        function openAchievements() {
+            const listEl = document.getElementById('achifications-list');
+            listEl.innerHTML = ""; // Kosongkan list lama
+
+            achievementRules.forEach(ach => {
+                const isUnlocked = totalDataEver >= ach.req;
+                
+                // Jika terbuka tampilkan nama asli, jika terkunci ganti jadi tanda tanya
+                const icon = isUnlocked ? ach.icon : "🔒";
+                const title = isUnlocked ? ach.name : "???";
+                const desc = isUnlocked ? ach.desc : `Kunci terbuka pada ${ach.req.toLocaleString('id-ID')} baris data.`;
+                const cssClass = isUnlocked ? "achievement-row unlocked" : "achievement-row";
+
+                listEl.innerHTML += `
+                    <div class="${cssClass}">
+                        <div class="ach-icon">${icon}</div>
+                        <div class="ach-details">
+                            <span class="ach-title">${title}</span>
+                            <span class="ach-desc">${desc}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            achModal.style.display = "block";
+        }
+
+        function closeAchievements() {
+            achModal.style.display = "none";
+        }
+
+        // Tutup modal jika klik di luar area kotak putih
+        window.onclick = function(event) {
+            if (event.target == achModal) {
+                closeAchievements();
             }
         }
 
