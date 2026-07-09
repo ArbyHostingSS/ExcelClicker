@@ -764,42 +764,60 @@
 
         // LOGIKA BARU: INTERFACES & EKSEKUSI IKLAN GOOGLE REWARDED (SANDBOX MODE)
         function showRewardedAd() {
-            const adBtn = document.getElementById('ad-btn');
-            adBtn.disabled = true;
-            adBtn.innerText = "⏳ Memuat Iklan Google...";
+    const adBtn = document.getElementById('ad-btn');
+    adBtn.disabled = true;
+    adBtn.innerText = "⏳ Memuat Iklan Google...";
 
-            // Panggilan sistem penayangan iklan dari Google SDK
-            adBreak({
-                type: 'reward',
-                name: 'bonus_data_50k',
-                beforeAd: function() {
-                    console.log('Iklan Sandbox Google ditampilkan.');
-                },
-                afterAd: function() {
-                    adBtn.disabled = false;
-                    adBtn.innerText = "📺 Nonton Iklan (Bonus +50k Data Gratis!)";
-                },
-                beforeReward: function(showAdFn) {
-                    showAdFn(); // Menyalakan visual player iklan
-                },
-                adDismissed: function() {
-                    alert("Kamu harus menonton iklan hingga selesai agar bonus data masuk!");
-                },
-                adViewed: function() {
-                    // Blok aksi ketika iklan selesai diputar seutuhnya
-                    alert("🎉 Kode Sandbox Sukses! Bonus +50.000 baris data dimasukkan.");
-                    
-                    let adReward = 50000;
-                    dataInputted += adReward;
-                    totalDataEver += adReward;
-                    
-                    recalculateDPS();
-                    saveGame();
-                    updateUI();
-                    updateUpgradeButtons();
-                }
-            });
+    // Pengaman: Jika dalam 5 detik Google tidak merespon, batalkan otomatis agar game tidak macet
+    const adTimeout = setTimeout(() => {
+        if (adBtn.disabled && adBtn.innerText.includes("Memuat")) {
+            console.log('Google SDK Timeout atau diblokir AdBlocker. Menjalankan fallback simulasi.');
+            adBtn.disabled = false;
+            adBtn.innerText = "📺 Nonton Iklan (Bonus +50k Data Gratis!)";
+            
+            // Tetap berikan hadiah demi kelancaran testing jika SDK Google diblokir browser
+            alert("⚠️ Google Sandbox tidak merespon (Mungkin terblokir AdBlock). Menggunakan sistem simulasi data +50.000!");
+            giveRewardData();
         }
+    }, 5000);
+
+    // Panggilan sistem penayangan iklan dari Google SDK
+    adBreak({
+        type: 'reward',
+        name: 'bonus_data_50k',
+        beforeAd: function() {
+            clearTimeout(adTimeout); // Batalkan timeout jika iklan berhasil muncul
+            console.log('Iklan Sandbox Google ditampilkan.');
+        },
+        afterAd: function() {
+            adBtn.disabled = false;
+            adBtn.innerText = "📺 Nonton Iklan (Bonus +50k Data Gratis!)";
+        },
+        beforeReward: function(showAdFn) {
+            showAdFn(); 
+        },
+        adDismissed: function() {
+            alert("Kamu harus menonton iklan hingga selesai agar bonus data masuk!");
+        },
+        adViewed: function() {
+            clearTimeout(adTimeout);
+            alert("🎉 Kode Sandbox Sukses! Bonus +50.000 baris data dimasukkan.");
+            giveRewardData();
+        }
+    });
+}
+
+// Fungsi terpisah untuk membagikan data agar kode lebih rapi
+function giveRewardData() {
+    let adReward = 50000;
+    dataInputted += adReward;
+    totalDataEver += adReward;
+    
+    recalculateDPS();
+    saveGame();
+    updateUI();
+    updateUpgradeButtons();
+}
 
         function buyUpgrade(id) {
             let upgrade = upgrades[id]; let mods = getAchievementModifiers();
