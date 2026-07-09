@@ -38,7 +38,7 @@
             text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
         }
 
-        /* MENU UTAS ATAS: leaderboard baru & piala */
+        /* MENU UTAS ATAS */
         .top-menu-container {
             display: flex;
             align-items: center;
@@ -49,7 +49,6 @@
             justify-content: center;
         }
 
-        /* Tombol Leaderboard Persegi Panjang Ujung Melengkung */
         .leaderboard-btn {
             background-color: #107c41;
             color: white;
@@ -57,7 +56,7 @@
             padding: 10px 20px;
             font-size: 14px;
             font-weight: bold;
-            border-radius: 25px; /* Membuat ujung melengkung sempurna */
+            border-radius: 25px;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: transform 0.2s, background-color 0.2s;
@@ -69,7 +68,6 @@
             transform: scale(1.03);
         }
 
-        /* Tombol Piala Achievements */
         .trophy-btn {
             background-color: #ffb900;
             border: none;
@@ -99,7 +97,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            max-width: 700px; /* Dipersempit agar tampilan seimbang */
+            max-width: 700px;
             width: 100%;
             position: relative;
             z-index: 1;
@@ -186,7 +184,6 @@
         }
         .upgrade-btn:disabled { background-color: #ccc; color: #666; cursor: not-allowed; }
 
-        /* Style Teks Misi yang Dipindah ke Bawah */
         .subtitle {
             color: #555;
             font-style: italic;
@@ -199,7 +196,16 @@
             border-radius: 8px;
         }
 
-        /* Style Konten Leaderboard di Dalam Pop-up */
+        /* Style Teks Kredit Pengembangan (Baru) */
+        .dev-credit {
+            font-size: 11px;
+            color: #777;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            text-shadow: 1px 1px 1px rgba(255,255,255,0.6);
+        }
+
         .leaderboard-title {
             font-size: 15px;
             font-weight: bold;
@@ -222,7 +228,7 @@
             padding-bottom: 3px;
         }
 
-        /* TAMPILAN POP-UP MODAL (LEADERBOARD & ACHIEVEMENTS) */
+        /* MODAL SYSTEM */
         .modal {
             display: none; 
             position: fixed;
@@ -290,7 +296,8 @@
         .system-footer {
             margin-top: 20px;
             display: flex;
-            gap: 15px;
+            flex-direction: column; /* Mengatur vertikal agar menumpuk rapi */
+            gap: 10px;
             align-items: center;
             position: relative;
             z-index: 2;
@@ -303,7 +310,6 @@
 
     <h1>Excel Clicker 🧮</h1>
     
-    <!-- Bagian Atas Baru: Tombol Persegi Panjang Melengkung & Tombol Piala -->
     <div class="top-menu-container">
         <button class="leaderboard-btn" onclick="openLeaderboard()">🏆 Lihat Leaderboard Publik</button>
         <button class="trophy-btn" onclick="openAchievements()" title="Lihat Pencapaian">🏆</button>
@@ -330,10 +336,10 @@
         </div>
     </div>
 
-    <!-- Teks Misi Sekarang Pindah Ke Bawah -->
+    <!-- Teks Misi -->
     <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
 
-    <!-- POP-UP MODAL LEADERBOARD (BARU) -->
+    <!-- POP-UP MODAL LEADERBOARD -->
     <div id="leaderboard-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeLeaderboard()">&times;</span>
@@ -356,9 +362,14 @@
         </div>
     </div>
 
+    <!-- SYSTEM FOOTER -->
     <div class="system-footer">
-        <span class="save-status" id="save-status">Progress dimuat...</span>
-        <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <span class="save-status" id="save-status">Progress dimuat...</span>
+            <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+        </div>
+        <!-- Teks Kredit Tambahan Kamu -->
+        <div class="dev-credit">DEVELOPMENT BY ARBY X GEMINIAI</div>
     </div>
 
     <script>
@@ -524,15 +535,10 @@
             }
         }
 
-        /* FUNGSI MODAL LEADERBOARD */
-        function openLeaderboard() {
-            leaderboardModal.className = 'modal show';
-        }
-        function closeLeaderboard() {
-            leaderboardModal.className = 'modal';
-        }
+        function openLeaderboard() { leaderboardModal.className = 'modal show'; }
+        document.getElementById('leaderboard-modal').onclick = function(e) { if(e.target == this) closeLeaderboard(); }
+        function closeLeaderboard() { leaderboardModal.className = 'modal'; }
 
-        /* FUNGSI MODAL ACHIEVEMENT */
         function openAchievements() {
             const listEl = document.getElementById('achifications-list');
             listEl.innerHTML = "";
@@ -557,11 +563,8 @@
             achModal.className = 'modal show';
         }
 
-        function closeAchievements() { 
-            achModal.className = 'modal'; 
-        }
+        function closeAchievements() { achModal.className = 'modal'; }
 
-        // Tutup modal jika klik luar kotak konten
         window.onclick = function(event) {
             if (event.target == achModal) closeAchievements();
             if (event.target == leaderboardModal) closeLeaderboard();
