@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel Clicker: Akuntan Gabut Tycoon</title>
     
-    <!-- Memuat SDK Firebase secara Online -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
@@ -218,6 +217,46 @@
         }
         .redeem-btn:hover { background-color: #005a9e; }
 
+        /* FITUR KOTAK SARAN STYLING */
+        .feedback-container {
+            margin-top: 15px;
+            width: 100%;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .feedback-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+            text-align: left;
+            width: 100%;
+        }
+        .feedback-textarea {
+            width: 100%;
+            height: 60px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 12px;
+            resize: none;
+            font-family: inherit;
+        }
+        .feedback-submit-btn {
+            background-color: #107c41;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            align-self: flex-end;
+        }
+        .feedback-submit-btn:hover { background-color: #0b592e; }
+
         .upgrade-container-scroll {
             max-height: 400px;
             overflow-y: auto;
@@ -272,6 +311,7 @@
             letter-spacing: 1px;
             margin-top: 8px;
             text-shadow: 1px 1px 1px rgba(255,255,255,0.6);
+            cursor: pointer; /* Bisa diklik rahasia buat admin */
         }
 
         .leaderboard-title {
@@ -356,6 +396,22 @@
         .benefit-locked { color: #888; }
         .benefit-unlocked { color: #107c41; }
 
+        /* WISHLIST/FEEDBACK LIST UNTUK ADMIN */
+        .feedback-item {
+            background: #fdfdfd;
+            border: 1px solid #e2e2e2;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        .feedback-meta {
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
         .system-footer {
             margin-top: 20px;
             display: flex;
@@ -382,7 +438,6 @@
     <div class="rebirth-badge" id="rebirth-badge">✨ Rebirth: <span id="rebirth-count">0</span>x (Bonus: +<span id="bonus-pct">0</span>%)</div>
 
     <div class="container">
-        <!-- SEKSI UTAMA -->
         <div class="clicker-section">
             <div class="counter"><span id="data-count">0</span> Baris Data</div>
             <div class="dps-info">(+<span id="dps-count">0</span> data/detik otomatis)</div>
@@ -392,14 +447,18 @@
             
             <button id="rebirth-btn" onclick="triggerRebirth()">🔒 Resign Kerja (Butuh Jabatan CEO & 500k Data)</button>
 
-            <!-- KOTAK REDEEM CODE -->
             <div class="redeem-container">
                 <input type="text" id="redeem-input" class="redeem-input" placeholder="Masukkan Kode Redeem...">
                 <button class="redeem-btn" onclick="claimRedeemCode()">Redeem</button>
             </div>
+
+            <div class="feedback-container">
+                <span class="feedback-label">💬 Kirim Saran/Bug Ke Developer:</span>
+                <textarea id="feedback-input" class="feedback-textarea" placeholder="Tulis saran atau masukan kamu di sini biar game makin seru..."></textarea>
+                <button class="feedback-submit-btn" onclick="sendFeedback()">Kirim Masukan</button>
+            </div>
         </div>
 
-        <!-- SEKSI UPGRADE -->
         <div class="upgrade-section">
             <h3 style="margin-top: 0; color: #333; border-bottom: 2px solid #107c41; padding-bottom: 5px; margin-bottom: 12px;">Automasi Kantor</h3>
             <div class="upgrade-container-scroll">
@@ -418,7 +477,6 @@
 
     <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
 
-    <!-- POP-UP MODAL LEADERBOARD -->
     <div id="leaderboard-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeLeaderboard()">&times;</span>
@@ -430,7 +488,6 @@
         </div>
     </div>
 
-    <!-- POP-UP MODAL ACHIEVEMENTS -->
     <div id="ach-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeAchievements()">&times;</span>
@@ -439,13 +496,20 @@
         </div>
     </div>
 
-    <!-- SYSTEM FOOTER -->
+    <div id="admin-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeAdminModal()">&times;</span>
+            <h3 style="color:#d83b01; margin-top: 0; border-bottom: 2px solid #d83b01; padding-bottom: 10px;">🔑 Panel Pengontrol AJ (Daftar Saran)</h3>
+            <div class="modal-scrollable" id="admin-feedback-list">Memuat saran masuk...</div>
+        </div>
+    </div>
+
     <div class="system-footer">
         <div style="display: flex; gap: 15px; align-items: center;">
             <span class="save-status" id="save-status">Progress dimuat...</span>
             <button class="reset-btn" onclick="resetGame()">Reset Game</button>
         </div>
-        <div class="dev-credit">DEVELOPMENT BY ARBY X GEMINIAI</div>
+        <div class="dev-credit" onclick="checkAdminAccess()">DEVELOPMENT BY ARBY X GEMINIAI</div>
     </div>
 
     <script>
@@ -469,7 +533,7 @@
         let totalDataEver = 0;
         let totalPlayTime = 0; 
         let rebirthCount = 0;
-        let claimedCodes = []; // Menyimpan daftar kode redeem yang sudah dipakai
+        let claimedCodes = [];
 
         let upgrades = {
             1: { cost: 15, dps: 1, level: 0, baseCost: 15 },
@@ -482,7 +546,6 @@
             8: { cost: 12000000, dps: 250000, level: 0, baseCost: 12000000 }
         };
 
-        // DAFTAR 10 ACHIEVEMENT BER-BENEFIT
         const achievementRules = [
             { id: "ach_1", type: "data", req: 100, name: "Karyawan Baru Teladan", desc: "Menginput total 100 baris data.", icon: "📝", benefit: "+5% Kekuatan Klik Manual" },
             { id: "ach_2", type: "data", req: 500, name: "Staf Keuangan Tetap", desc: "Menginput total 500 baris data.", icon: "🏢", benefit: "+5% Produksi Data Kantor (DPS)" },
@@ -496,12 +559,7 @@
             { id: "ach_10", type: "rebirth_data", req: 10000000, name: "Monopolist Data Semesta", desc: "Sudah Rebirth & mencapai 10.000.000 data di kasta baru.", icon: "🌌", benefit: "+50% Kecepatan Total Klik & DPS Kantor" }
         ];
 
-        // DATABASE KODE REDEEM
-        const redeemDatabase = {
-            "ARBYGANTENG": 5000,
-            "EXCELCUAN": 50000,
-            "REBIRTHBOOST": 1000000
-        };
+        const redeemDatabase = { "ARBYGANTENG": 5000, "EXCELCUAN": 50000, "REBIRTHBOOSTS": 10000000 };
 
         const dataCountEl = document.getElementById('data-count');
         const dpsCountEl = document.getElementById('dps-count');
@@ -517,11 +575,11 @@
         
         const achModal = document.getElementById('ach-modal');
         const leaderboardModal = document.getElementById('leaderboard-modal');
+        const adminModal = document.getElementById('admin-modal');
 
         function formatTime(seconds) {
             if (seconds < 60) return seconds + "s";
-            let m = Math.floor(seconds / 60);
-            let s = seconds % 60;
+            let m = Math.floor(seconds / 60); let s = seconds % 60;
             if (m < 60) return m + "m " + s + "s";
             let h = Math.floor(m / 60); m = m % 60;
             return h + "j " + m + "m";
@@ -534,22 +592,19 @@
             return false;
         }
 
-        // KALKULASI TOTAL BUFF DARI ACHIEVEMENT
         function getAchievementModifiers() {
             let mods = { clickBonus: 1, dpsBonus: 1, discount: 1, specialRebirth: false };
-            
-            if (totalDataEver >= 100) mods.clickBonus += 0.05; // ach 1
-            if (totalDataEver >= 500) mods.dpsBonus += 0.05;   // ach 2
-            if (upgrades[2].level >= 10) mods.dpsBonus += 0.10; // ach 3
-            if (totalDataEver >= 25000) mods.discount -= 0.05; // ach 4
-            if (totalDataEver >= 50000) mods.clickBonus += 0.15; // ach 5
-            if (totalDataEver >= 500000) mods.dpsBonus += 0.15; // ach 6
-            
+            if (totalDataEver >= 100) mods.clickBonus += 0.05;
+            if (totalDataEver >= 500) mods.dpsBonus += 0.05;
+            if (upgrades[2].level >= 10) mods.dpsBonus += 0.10;
+            if (totalDataEver >= 25000) mods.discount -= 0.05;
+            if (totalDataEver >= 50000) mods.clickBonus += 0.15;
+            if (totalDataEver >= 500000) mods.dpsBonus += 0.15;
             if (rebirthCount > 0) {
-                if (totalDataEver >= 25000) mods.clickBonus += 0.20;   // ach 7
-                if (totalDataEver >= 500000) mods.specialRebirth = true; // ach 8
-                if (totalDataEver >= 2500000) mods.dpsBonus += 0.30;  // ach 9
-                if (totalDataEver >= 10000000) { mods.clickBonus += 0.50; mods.dpsBonus += 0.50; } // ach 10
+                if (totalDataEver >= 25000) mods.clickBonus += 0.20;
+                if (totalDataEver >= 500000) mods.specialRebirth = true;
+                if (totalDataEver >= 2500000) mods.dpsBonus += 0.30;
+                if (totalDataEver >= 10000000) { mods.clickBonus += 0.50; mods.dpsBonus += 0.50; }
             }
             return mods;
         }
@@ -574,7 +629,6 @@
                 totalPlayTime = save.totalPlayTime || 0;
                 rebirthCount = save.rebirthCount || 0;
                 claimedCodes = save.claimedCodes || [];
-                
                 for (let id in upgrades) {
                     if (save.upgrades && save.upgrades[id]) {
                         upgrades[id].level = save.upgrades[id].level;
@@ -587,21 +641,13 @@
         function saveGame() {
             if (!playerName) return;
             const saveState = {
-                dataInputted: dataInputted,
-                dataPerSecond: dataPerSecond,
-                totalDataEver: totalDataEver,
-                totalPlayTime: totalPlayTime,
-                rebirthCount: rebirthCount,
-                claimedCodes: claimedCodes,
-                upgrades: upgrades
+                dataInputted: dataInputted, dataPerSecond: dataPerSecond, totalDataEver: totalDataEver,
+                totalPlayTime: totalPlayTime, rebirthCount: rebirthCount, claimedCodes: claimedCodes, upgrades: upgrades
             };
             localStorage.setItem('excelClickerSaveV5', JSON.stringify(saveState));
-            
             if(database) {
                 database.ref('leaderboard/' + playerName).set({
-                    username: playerName,
-                    score: Math.floor(totalDataEver),
-                    playTime: totalPlayTime
+                    username: playerName, score: Math.floor(totalDataEver), playTime: totalPlayTime
                 });
             }
             saveStatusEl.innerText = "Progress otomatis tersimpan...";
@@ -637,7 +683,7 @@
 
         function getRebirthMultiplier() {
             let mods = getAchievementModifiers();
-            let baseRate = mods.specialRebirth ? 0.25 : 0.20; // Upgrade dari ach 8
+            let baseRate = mods.specialRebirth ? 0.25 : 0.20;
             return 1 + (rebirthCount * baseRate);
         }
 
@@ -645,33 +691,24 @@
             e.preventDefault();
             let mods = getAchievementModifiers();
             let clickValue = 1 * getRebirthMultiplier() * mods.clickBonus;
-            dataInputted += clickValue;
-            totalDataEver += clickValue;
-            updateUI();
-            updateUpgradeButtons();
+            dataInputted += clickValue; totalDataEver += clickValue;
+            updateUI(); updateUpgradeButtons();
         });
 
         function buyUpgrade(id) {
-            let upgrade = upgrades[id];
-            let mods = getAchievementModifiers();
-            let finalCost = Math.floor(upgrade.cost * mods.discount); // Potongan harga ach 4
-
+            let upgrade = upgrades[id]; let mods = getAchievementModifiers();
+            let finalCost = Math.floor(upgrade.cost * mods.discount);
             if (dataInputted >= finalCost) {
-                dataInputted -= finalCost;
-                upgrade.level += 1;
-                
+                dataInputted -= finalCost; upgrade.level += 1;
                 recalculateDPS();
                 upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.5, upgrade.level));
-                updateUI();
-                updateUpgradeButtons();
+                updateUI(); updateUpgradeButtons();
             }
         }
 
         function recalculateDPS() {
             let baseDPS = 0;
-            for (let id in upgrades) {
-                baseDPS += upgrades[id].level * upgrades[id].dps;
-            }
+            for (let id in upgrades) { baseDPS += upgrades[id].level * upgrades[id].dps; }
             let mods = getAchievementModifiers();
             dataPerSecond = baseDPS * getRebirthMultiplier() * mods.dpsBonus;
         }
@@ -680,21 +717,13 @@
             dataCountEl.innerText = Math.floor(dataInputted).toLocaleString('id-ID');
             dpsCountEl.innerText = Math.floor(dataPerSecond).toLocaleString('id-ID');
             playtimeTextEl.innerText = formatTime(totalPlayTime);
-            
-            let multValue = getRebirthMultiplier();
-            let mods = getAchievementModifiers();
+            let multValue = getRebirthMultiplier(); let mods = getAchievementModifiers();
             multInfoEl.innerText = `Multiplier Klik: x${(multValue * mods.clickBonus).toFixed(2)} | Multiplier DPS: x${mods.dpsBonus.toFixed(2)}`;
-
             if (rebirthCount > 0) {
-                rebirthBadge.style.display = "block";
-                rebirthCountEl.innerText = rebirthCount;
-                let baseRate = mods.specialRebirth ? 25 : 20;
-                bonusPctEl.innerText = (rebirthCount * baseRate);
+                rebirthBadge.style.display = "block"; rebirthCountEl.innerText = rebirthCount;
+                let baseRate = mods.specialRebirth ? 25 : 20; bonusPctEl.innerText = (rebirthCount * baseRate);
             }
-
-            updateRank();
-            checkRebirthStatus();
-
+            updateRank(); checkRebirthStatus();
             let modsDisc = getAchievementModifiers();
             for (let id in upgrades) {
                 document.getElementById(`up${id}-level`).innerText = upgrades[id].level;
@@ -706,97 +735,111 @@
         function updateUpgradeButtons() {
             let mods = getAchievementModifiers();
             for (let id in upgrades) {
-                const btn = document.getElementById(`up${id}-btn`);
                 let finalCost = Math.floor(upgrades[id].cost * mods.discount);
-                btn.disabled = dataInputted < finalCost;
+                document.getElementById(`up${id}-btn`).disabled = dataInputted < finalCost;
             }
         }
 
         function checkRebirthStatus() {
             if (dataInputted >= 500000 && totalDataEver >= 500000) {
-                rebirthBtn.className = "ready";
-                rebirthBtn.innerText = "🔥 AMBIL PESANGON & RESIGN (Mulai Rebirth Sekarang!)";
+                rebirthBtn.className = "ready"; rebirthBtn.innerText = "🔥 AMBIL PESANGON & RESIGN (Mulai Rebirth Sekarang!)";
             } else {
-                rebirthBtn.className = "";
-                rebirthBtn.innerText = "🔒 Resign Kerja (Butuh minimal 500.000 data saat ini)";
+                rebirthBtn.className = ""; rebirthBtn.innerText = "🔒 Resign Kerja (Butuh minimal 500.000 data saat ini)";
             }
         }
 
         function triggerRebirth() {
             if (dataInputted >= 500000 && totalDataEver >= 500000) {
                 if (confirm("Apakah kamu yakin mau mengajukan Resign?")) {
-                    rebirthCount += 1;
-                    dataInputted = 0;
-                    totalDataEver = 0;
-                    
-                    for (let id in upgrades) {
-                        upgrades[id].level = 0;
-                        upgrades[id].cost = upgrades[id].baseCost;
-                    }
-                    
-                    recalculateDPS();
-                    saveGame();
-                    updateUI();
-                    updateUpgradeButtons();
+                    rebirthCount += 1; dataInputted = 0; totalDataEver = 0;
+                    for (let id in upgrades) { upgrades[id].level = 0; upgrades[id].cost = upgrades[id].baseCost; }
+                    recalculateDPS(); saveGame(); updateUI(); updateUpgradeButtons();
                     alert("Selamat! Kamu resmi Resign. Sekarang pimpin korporatmu dengan kasta kedaulatan baru!");
                 }
             }
         }
 
-        // PROSES CLAIM KODE REDEEM
         function claimRedeemCode() {
-            const inputEl = document.getElementById('redeem-input');
-            const code = inputEl.value.trim().toUpperCase();
-            
+            const inputEl = document.getElementById('redeem-input'); const code = inputEl.value.trim().toUpperCase();
             if (code === "") return;
-            
-            if (claimedCodes.includes(code)) {
-                alert("❌ Kode ini sudah pernah kamu klaim sebelumnya!");
-                return;
-            }
-            
+            if (claimedCodes.includes(code)) { alert("❌ Kode ini sudah pernah kamu klaim!"); return; }
             if (redeemDatabase[code] !== undefined) {
-                let reward = redeemDatabase[code];
-                dataInputted += reward;
-                totalDataEver += reward;
-                claimedCodes.push(code);
-                inputEl.value = "";
-                
-                recalculateDPS();
-                saveGame();
-                updateUI();
-                updateUpgradeButtons();
-                alert(`🎉 Sukses! Kamu berhasil mencairkan kode redeem dan mendapatkan +${reward.toLocaleString('id-ID')} baris data gratis!`);
-            } else {
-                alert("❌ Kode redeem salah atau sudah kedaluwarsa!");
+                let reward = redeemDatabase[code]; dataInputted += reward; totalDataEver += reward;
+                claimedCodes.push(code); inputEl.value = "";
+                recalculateDPS(); saveGame(); updateUI(); updateUpgradeButtons();
+                alert(`🎉 Sukses! Mendapatkan +${reward.toLocaleString('id-ID')} baris data gratis!`);
+            } else { alert("❌ Kode redeem salah atau sudah kedaluwarsa!"); }
+        }
+
+        // LOGIKA KOTAK SARAN PRIVAT (KIRIM KE FIREBASE)
+        function sendFeedback() {
+            const inputEl = document.getElementById('feedback-input');
+            const text = inputEl.value.trim();
+            if (text === "") { alert("Tulis dulu saran atau masukan kamu ya!"); return; }
+            
+            if (database) {
+                database.ref('feedbacks').push({
+                    sender: playerName,
+                    message: text,
+                    timestamp: new Date().toLocaleString('id-ID')
+                }).then(() => {
+                    alert("🎉 Terima kasih banyak! Masukan kamu sudah dikirim secara privat ke AJ (Developer).");
+                    inputEl.value = "";
+                }).catch(() => {
+                    alert("Gagal mengirim saran. Coba cek koneksi internet kamu.");
+                });
             }
         }
+
+        // LOGIKA KHUSUS AJ (BACA SARAN PAKAI PASSWORD)
+        function checkAdminAccess() {
+            const pass = prompt("Masukkan Password Khusus Admin/Developer untuk melihat saran:");
+            if (pass === "ARBYADMIN123") {
+                openAdminModal();
+            } else if (pass !== null) {
+                alert("❌ Password Salah! Kamu bukan AJ.");
+            }
+        }
+
+        function openAdminModal() {
+            adminModal.className = 'modal show';
+            const listEl = document.getElementById('admin-feedback-list');
+            listEl.innerHTML = "Memuat data saran dari Firebase...";
+            
+            if (database) {
+                database.ref('feedbacks').once('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (!data) { listEl.innerHTML = "Belum ada saran atau masukan yang masuk dari pemain."; return; }
+                    
+                    let items = Object.values(data).reverse(); // Urutkan dari yang paling baru
+                    listEl.innerHTML = items.map(f => `
+                        <div class="feedback-item">
+                            <div class="feedback-meta">👤 Pemain: ${f.sender} | 📅 Waktu: ${f.timestamp}</div>
+                            <div style="white-space: pre-wrap;">${f.message}</div>
+                        </div>
+                    `).join('');
+                });
+            }
+        }
+        function closeAdminModal() { adminModal.className = 'modal'; }
 
         function openLeaderboard() { leaderboardModal.className = 'modal show'; }
         function closeLeaderboard() { leaderboardModal.className = 'modal'; }
 
         function openAchievements() {
-            const listEl = document.getElementById('achifications-list');
-            listEl.innerHTML = "";
+            const listEl = document.getElementById('achifications-list'); listEl.innerHTML = "";
             achievementRules.forEach(ach => {
-                const unlocked = isAchUnlocked(ach);
-                const icon = unlocked ? ach.icon : "🔒";
-                const title = unlocked ? ach.name : "???";
-                const desc = unlocked ? ach.desc : "Persyaratan belum terpenuhi.";
-                const cssClass = unlocked ? "achievement-row unlocked" : "achievement-row";
+                const unlocked = isAchUnlocked(ach); const icon = unlocked ? ach.icon : "🔒"; const title = unlocked ? ach.name : "???";
+                const desc = unlocked ? ach.desc : "Persyaratan belum terpenuhi."; const cssClass = unlocked ? "achievement-row unlocked" : "achievement-row";
                 const benefitStatus = unlocked ? `✨ Aktif: ${ach.benefit}` : `🔒 Terkunci: Efek ${ach.benefit}`;
                 const benefitClass = unlocked ? "ach-benefit benefit-unlocked" : "ach-benefit benefit-locked";
-
                 listEl.innerHTML += `
                     <div class="${cssClass}">
                         <div class="ach-icon">${icon}</div>
                         <div class="ach-details">
-                            <span class="ach-title">${title}</span>
-                            <span class="ach-desc">${desc}</span>
-                            <span class="${benefitClass}">${benefitStatus}</span>
+                            <span class="ach-title">${title}</span><span class="ach-desc">${desc}</span><span class="${benefitClass}">${benefitStatus}</span>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
             achModal.className = 'modal show';
         }
@@ -805,46 +848,28 @@
         window.onclick = function(event) {
             if (event.target == achModal) closeAchievements();
             if (event.target == leaderboardModal) closeLeaderboard();
+            if (event.target == adminModal) closeAdminModal();
         }
 
         function listenToLeaderboards() {
             database.ref('leaderboard').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (!data) return;
+                const data = snapshot.val(); if (!data) return;
                 let players = Object.values(data);
                 let sortedByScore = [...players].sort((a, b) => b.score - a.score).slice(0, 5);
-                const scoreListEl = document.getElementById('leaderboard-data');
-                scoreListEl.innerHTML = sortedByScore.map(p => `<li><b>${p.username}</b>: ${p.score.toLocaleString('id-ID')} baris</li>`).join('');
-
+                document.getElementById('leaderboard-data').innerHTML = sortedByScore.map(p => `<li><b>${p.username}</b>: ${p.score.toLocaleString('id-ID')} baris</li>`).join('');
                 let sortedByTime = [...players].sort((a, b) => b.playTime - a.playTime).slice(0, 5);
-                const timeListEl = document.getElementById('leaderboard-time');
-                timeListEl.innerHTML = sortedByTime.map(p => `<li><b>${p.username}</b>: ${formatTime(p.playTime)}</li>`).join('');
+                document.getElementById('leaderboard-time').innerHTML = sortedByTime.map(p => `<li><b>${p.username}</b>: ${formatTime(p.playTime)}</li>`).join('');
             });
         }
 
         setInterval(() => {
-            if (dataPerSecond > 0) {
-                dataInputted += (dataPerSecond / 10);
-                totalDataEver += (dataPerSecond / 10);
-                updateUI();
-                updateUpgradeButtons();
-            }
+            if (dataPerSecond > 0) { dataInputted += (dataPerSecond / 10); totalDataEver += (dataPerSecond / 10); updateUI(); updateUpgradeButtons(); }
         }, 100);
 
-        setInterval(() => {
-            totalPlayTime += 1;
-            playtimeTextEl.innerText = formatTime(totalPlayTime);
-        }, 1000);
-
+        setInterval(() => { totalPlayTime += 1; playtimeTextEl.innerText = formatTime(totalPlayTime); }, 1000);
         setInterval(saveGame, 6000);
 
-        window.onload = function() {
-            loadGame();
-            recalculateDPS();
-            updateUI();
-            updateUpgradeButtons();
-            listenToLeaderboards();
-        };
+        window.onload = function() { loadGame(); recalculateDPS(); updateUI(); updateUpgradeButtons(); listenToLeaderboards(); };
     </script>
 </body>
 </html>
