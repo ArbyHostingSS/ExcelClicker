@@ -38,7 +38,6 @@
             text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
         }
 
-        /* MENU UTAS ATAS */
         .top-menu-container {
             display: flex;
             align-items: center;
@@ -78,9 +77,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: transform 0.2s;
         }
-        .trophy-btn:hover {
-            transform: scale(1.1) rotate(10deg);
-        }
+        .trophy-btn:hover { transform: scale(1.1) rotate(10deg); }
 
         .rank-badge {
             background-color: #107c41;
@@ -93,11 +90,24 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
+        /* Stats Rebirth */
+        .rebirth-badge {
+            background-color: #ffb900;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: none; /* muncul jika sudah > 0 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
         .container {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            max-width: 700px;
+            max-width: 850px;
             width: 100%;
             position: relative;
             z-index: 1;
@@ -109,7 +119,7 @@
             border-radius: 12px;
             padding: 22px;
             flex: 1;
-            min-width: 280px;
+            min-width: 320px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             backdrop-filter: blur(4px); 
         }
@@ -128,10 +138,10 @@
             color: #107c41;
         }
 
-        .dps-info, .playtime-info {
+        .dps-info, .playtime-info, .multiplier-info {
             font-size: 13px;
             color: #555;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             font-weight: 500;
         }
 
@@ -151,9 +161,41 @@
             position: relative;
             z-index: 2;
         }
-
         #excel-btn:hover { background-color: #148f4c; }
         #excel-btn:active { transform: translateY(5px); box-shadow: none; }
+
+        /* REBIRTH ACTION BUTTON */
+        #rebirth-btn {
+            background-color: #a0a0a0;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: not-allowed;
+            margin-top: 15px;
+            transition: all 0.3s;
+            width: 100%;
+            text-align: center;
+        }
+        #rebirth-btn.ready {
+            background-color: #d83b01;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(216, 59, 1, 0.3);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .upgrade-container-scroll {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
 
         .upgrade-item {
             display: flex;
@@ -179,7 +221,7 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 11px;
-            min-width: 95px;
+            min-width: 105px;
             text-align: center;
         }
         .upgrade-btn:disabled { background-color: #ccc; color: #666; cursor: not-allowed; }
@@ -196,7 +238,6 @@
             border-radius: 8px;
         }
 
-        /* Style Teks Kredit Pengembangan (Baru) */
         .dev-credit {
             font-size: 11px;
             color: #777;
@@ -215,20 +256,11 @@
             margin-bottom: 10px;
             margin-top: 15px;
         }
-        .leaderboard-title:first-child { margin-top: 0; }
 
-        ol {
-            padding-left: 20px;
-            margin: 0 0 15px 0;
-            font-size: 13px;
-        }
-        li {
-            margin-bottom: 5px;
-            border-bottom: 1px dashed #eee;
-            padding-bottom: 3px;
-        }
+        ol { padding-left: 20px; margin: 0 0 15px 0; font-size: 13px; }
+        li { margin-bottom: 5px; border-bottom: 1px dashed #eee; padding-bottom: 3px; }
 
-        /* MODAL SYSTEM */
+        /* MODAL */
         .modal {
             display: none; 
             position: fixed;
@@ -270,7 +302,6 @@
             cursor: pointer;
             color: #666;
         }
-        .close-btn:hover { color: #333; }
 
         .achievement-row {
             display: flex;
@@ -282,12 +313,7 @@
             border-radius: 8px;
             border-left: 5px solid #ccc;
         }
-
-        .achievement-row.unlocked {
-            border-left-color: #ffb900;
-            background: #fffdf3;
-        }
-
+        .achievement-row.unlocked { border-left-color: #ffb900; background: #fffdf3; }
         .ach-icon { font-size: 24px; }
         .ach-details { display: flex; flex-direction: column; }
         .ach-title { font-weight: bold; font-size: 14px; }
@@ -296,7 +322,7 @@
         .system-footer {
             margin-top: 20px;
             display: flex;
-            flex-direction: column; /* Mengatur vertikal agar menumpuk rapi */
+            flex-direction: column;
             gap: 10px;
             align-items: center;
             position: relative;
@@ -316,27 +342,39 @@
     </div>
     
     <div class="rank-badge">Jabatan: <span id="rank-text">Anak Magang Fotokopi</span></div>
+    <div class="rebirth-badge" id="rebirth-badge">✨ Rebirth: <span id="rebirth-count">0</span>x (Bonus: +<span id="bonus-pct">0</span>%)</div>
 
     <div class="container">
         <!-- SEKSI UTAMA -->
         <div class="clicker-section">
             <div class="counter"><span id="data-count">0</span> Baris Data</div>
             <div class="dps-info">(+<span id="dps-count">0</span> data/detik otomatis)</div>
+            <div class="multiplier-info" id="mult-info">Efisiensi Klik: +1 data/klik</div>
             <div class="playtime-info">⏱️ Waktu Bermain: <span id="playtime-text">0s</span></div>
             <button id="excel-btn">INPUT DATA (Spam Klik!)</button>
+            
+            <!-- TOMBOL REBIRTH -->
+            <button id="rebirth-btn" onclick="triggerRebirth()">🔒 Resign Kerja (Butuh Jabatan CEO & 500k Data)</button>
         </div>
 
         <!-- SEKSI UPGRADE -->
         <div class="upgrade-section">
-            <h3 style="margin-top: 0; color: #333; border-bottom: 2px solid #107c41; padding-bottom: 5px;">Automasi Kantor</h3>
-            <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Rumus VLOOKUP (<span id="up1-level">0</span>)</span><span class="upgrade-desc">+1 data/s</span></div><button class="upgrade-btn" id="up1-btn" onclick="buyUpgrade(1)">Beli</button></div>
-            <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Anak Magang (<span id="up2-level">0</span>)</span><span class="upgrade-desc">+5 data/s</span></div><button class="upgrade-btn" id="up2-btn" onclick="buyUpgrade(2)">Beli</button></div>
-            <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Macro VBA & AI (<span id="up3-level">0</span>)</span><span class="upgrade-desc">+25 data/s</span></div><button class="upgrade-btn" id="up3-btn" onclick="buyUpgrade(3)">Beli</button></div>
-            <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Server Cloud (<span id="up4-level">0</span>)</span><span class="upgrade-desc">+100 data/s</span></div><button class="upgrade-btn" id="up4-btn" onclick="buyUpgrade(4)">Beli</button></div>
+            <h3 style="margin-top: 0; color: #333; border-bottom: 2px solid #107c41; padding-bottom: 5px; margin-bottom: 12px;">Automasi Kantor</h3>
+            <div class="upgrade-container-scroll">
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Rumus VLOOKUP (<span id="up1-level">0</span>)</span><span class="upgrade-desc">+1 data/s</span></div><button class="upgrade-btn" id="up1-btn" onclick="buyUpgrade(1)">Beli</button></div>
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Anak Magang (<span id="up2-level">0</span>)</span><span class="upgrade-desc">+5 data/s</span></div><button class="upgrade-btn" id="up2-btn" onclick="buyUpgrade(2)">Beli</button></div>
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Macro VBA & AI (<span id="up3-level">0</span>)</span><span class="upgrade-desc">+25 data/s</span></div><button class="upgrade-btn" id="up3-btn" onclick="buyUpgrade(3)">Beli</button></div>
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Server Cloud (<span id="up4-level">0</span>)</span><span class="upgrade-desc">+100 data/s</span></div><button class="upgrade-btn" id="up4-btn" onclick="buyUpgrade(4)">Beli</button></div>
+                
+                <!-- 4 AUTOMATISASI KANTOR BARU -->
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Data Center AI (<span id="up5-level">0</span>)</span><span class="upgrade-desc">+600 data/s</span></div><button class="upgrade-btn" id="up5-btn" onclick="buyUpgrade(5)">Beli</button></div>
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Kuantum Akuntansi (<span id="up6-level">0</span>)</span><span class="upgrade-desc">+4.500 data/s</span></div><button class="upgrade-btn" id="up6-btn" onclick="buyUpgrade(6)">Beli</button></div>
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Satelit Korporat (<span id="up7-level">0</span>)</span><span class="upgrade-desc">+35.000 data/s</span></div><button class="upgrade-btn" id="up7-btn" onclick="buyUpgrade(7)">Beli</button></div>
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Monopoli Data Dunia (<span id="up8-level">0</span>)</span><span class="upgrade-desc">+250.000 data/s</span></div><button class="upgrade-btn" id="up8-btn" onclick="buyUpgrade(8)">Beli</button></div>
+            </div>
         </div>
     </div>
 
-    <!-- Teks Misi -->
     <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
 
     <!-- POP-UP MODAL LEADERBOARD -->
@@ -344,10 +382,8 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeLeaderboard()">&times;</span>
             <h3 style="color:#107c41; margin-top: 0; border-bottom: 2px solid #107c41; padding-bottom: 10px;">📊 Papan Peringkat Global</h3>
-            
             <div class="leaderboard-title">🏆 Data Terbanyak Di Input!</div>
             <ol id="leaderboard-data"><li>Memuat data...</li></ol>
-
             <div class="leaderboard-title">⏱️ Waktu Teratas Dimainkan!</div>
             <ol id="leaderboard-time"><li>Memuat data...</li></ol>
         </div>
@@ -368,12 +404,10 @@
             <span class="save-status" id="save-status">Progress dimuat...</span>
             <button class="reset-btn" onclick="resetGame()">Reset Game</button>
         </div>
-        <!-- Teks Kredit Tambahan Kamu -->
         <div class="dev-credit">DEVELOPMENT BY ARBY X GEMINIAI</div>
     </div>
 
     <script>
-        // === KODE FIREBASE ASLI ===
         const firebaseConfig = {
             apiKey: "AIzaSyAx2olUz_YYLEoY-GGCAXGGIwFArixUJvA",
             authDomain: "excel-clicker.firebaseapp.com",
@@ -393,12 +427,17 @@
         let dataPerSecond = 0;
         let totalDataEver = 0;
         let totalPlayTime = 0; 
+        let rebirthCount = 0; // Menyimpan berapa kali melakukan Rebirth
 
         let upgrades = {
             1: { cost: 15, dps: 1, level: 0, baseCost: 15 },
             2: { cost: 100, dps: 5, level: 0, baseCost: 100 },
             3: { cost: 500, dps: 25, level: 0, baseCost: 500 },
-            4: { cost: 3000, dps: 100, level: 0, baseCost: 3000 }
+            4: { cost: 3000, dps: 100, level: 0, baseCost: 3000 },
+            5: { cost: 25000, dps: 600, level: 0, baseCost: 25000 },
+            6: { cost: 180000, dps: 4500, level: 0, baseCost: 180000 },
+            7: { cost: 1400000, dps: 35000, level: 0, baseCost: 1400000 },
+            8: { cost: 12000000, dps: 250000, level: 0, baseCost: 12000000 }
         };
 
         const achievementRules = [
@@ -414,6 +453,12 @@
         const rankTextEl = document.getElementById('rank-text');
         const saveStatusEl = document.getElementById('save-status');
         const playtimeTextEl = document.getElementById('playtime-text');
+        const rebirthBtn = document.getElementById('rebirth-btn');
+        const rebirthBadge = document.getElementById('rebirth-badge');
+        const rebirthCountEl = document.getElementById('rebirth-count');
+        const bonusPctEl = document.getElementById('bonus-pct');
+        const multInfoEl = document.getElementById('mult-info');
+        
         const achModal = document.getElementById('ach-modal');
         const leaderboardModal = document.getElementById('leaderboard-modal');
 
@@ -422,8 +467,7 @@
             let m = Math.floor(seconds / 60);
             let s = seconds % 60;
             if (m < 60) return m + "m " + s + "s";
-            let h = Math.floor(m / 60);
-            m = m % 60;
+            let h = Math.floor(m / 60); m = m % 60;
             return h + "j " + m + "m";
         }
 
@@ -436,17 +480,16 @@
                     localStorage.setItem('excelClickerName', playerName);
                     saveGame();
                 }, 500);
-            } else {
-                playerName = savedName;
-            }
+            } else { playerName = savedName; }
 
-            const savedData = localStorage.getItem('excelClickerSaveV3');
+            const savedData = localStorage.getItem('excelClickerSaveV4');
             if (savedData) {
                 const save = JSON.parse(savedData);
                 dataInputted = save.dataInputted || 0;
                 dataPerSecond = save.dataPerSecond || 0;
                 totalDataEver = save.totalDataEver || 0;
                 totalPlayTime = save.totalPlayTime || 0;
+                rebirthCount = save.rebirthCount || 0;
                 
                 for (let id in upgrades) {
                     if (save.upgrades && save.upgrades[id]) {
@@ -464,9 +507,10 @@
                 dataPerSecond: dataPerSecond,
                 totalDataEver: totalDataEver,
                 totalPlayTime: totalPlayTime,
+                rebirthCount: rebirthCount,
                 upgrades: upgrades
             };
-            localStorage.setItem('excelClickerSaveV3', JSON.stringify(saveState));
+            localStorage.setItem('excelClickerSaveV4', JSON.stringify(saveState));
             
             if(database) {
                 database.ref('leaderboard/' + playerName).set({
@@ -480,7 +524,7 @@
 
         function resetGame() {
             if (confirm("Hapus semua progres permainan?")) {
-                localStorage.removeItem('excelClickerSaveV3');
+                localStorage.removeItem('excelClickerSaveV4');
                 localStorage.removeItem('excelClickerName');
                 location.reload();
             }
@@ -488,18 +532,37 @@
 
         function updateRank() {
             let rank = "Anak Magang Fotokopi";
-            if (totalDataEver >= 500000) rank = "CEO Keuangan Gabut 👑";
-            else if (totalDataEver >= 100000) rank = "Manajer Keuangan 💼";
-            else if (totalDataEver >= 25000) rank = "Supervisor Akunting 📊";
-            else if (totalDataEver >= 5000) rank = "Senior Data Entry Excel 🧮";
-            else if (totalDataEver >= 500) rank = "Staf Keuangan Tetap 🏢";
+            
+            if (rebirthCount === 0) {
+                // Kasta Awal (Normal)
+                if (totalDataEver >= 500000) rank = "CEO Keuangan Gabut 👑";
+                else if (totalDataEver >= 100000) rank = "Manajer Keuangan 💼";
+                else if (totalDataEver >= 25000) rank = "Supervisor Akunting 📊";
+                else if (totalDataEver >= 5000) rank = "Senior Data Entry Excel 🧮";
+                else if (totalDataEver >= 500) rank = "Staf Keuangan Tetap 🏢";
+            } else {
+                // KASTA JABATAN BARU (KHUSUS YANG SUDAH REBIRTH)
+                if (totalDataEver >= 10000000) rank = "💎 Monopolist Data Semesta 🌌";
+                else if (totalDataEver >= 2500000) rank = "🚀 Owner Utama Korporat 💎";
+                else if (totalDataEver >= 500000) rank = "📈 Pemegang Saham Mayoritas 🏛️";
+                else if (totalDataEver >= 100000) rank = "🏢 Dewan Komisaris Utama";
+                else if (totalDataEver >= 25000) rank = "👔 Mantan CEO Pemantau";
+                else if (totalDataEver >= 5000) rank = "💼 Konsultan Eksekutif Senior";
+                else if (totalDataEver >= 0) rank = "🌱 Pengusaha Sukses Mulai Nol";
+            }
             rankTextEl.innerText = rank;
+        }
+
+        // Hitung Bonus Rebirth (+20% per Rebirth)
+        function getRebirthMultiplier() {
+            return 1 + (rebirthCount * 0.20);
         }
 
         clickBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            dataInputted += 1;
-            totalDataEver += 1;
+            let clickValue = 1 * getRebirthMultiplier();
+            dataInputted += clickValue;
+            totalDataEver += clickValue;
             updateUI();
             updateUpgradeButtons();
         });
@@ -509,18 +572,39 @@
             if (dataInputted >= upgrade.cost) {
                 dataInputted -= upgrade.cost;
                 upgrade.level += 1;
-                dataPerSecond += upgrade.dps;
+                
+                // Menghitung ulang DPS total berdasarkan level upgrade dikali bonus rebirth
+                recalculateDPS();
                 upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.5, upgrade.level));
                 updateUI();
                 updateUpgradeButtons();
             }
         }
 
+        function recalculateDPS() {
+            let baseDPS = 0;
+            for (let id in upgrades) {
+                baseDPS += upgrades[id].level * upgrades[id].dps;
+            }
+            dataPerSecond = baseDPS * getRebirthMultiplier();
+        }
+
         function updateUI() {
             dataCountEl.innerText = Math.floor(dataInputted).toLocaleString('id-ID');
-            dpsCountEl.innerText = dataPerSecond.toLocaleString('id-ID');
+            dpsCountEl.innerText = Math.floor(dataPerSecond).toLocaleString('id-ID');
             playtimeTextEl.innerText = formatTime(totalPlayTime);
+            
+            let multValue = getRebirthMultiplier();
+            multInfoEl.innerText = `Efisiensi Klik & DPS: x${multValue.toFixed(1)} (${rebirthCount}x Rebirth)`;
+
+            if (rebirthCount > 0) {
+                rebirthBadge.style.display = "block";
+                rebirthCountEl.innerText = rebirthCount;
+                bonusPctEl.innerText = (rebirthCount * 20);
+            }
+
             updateRank();
+            checkRebirthStatus();
 
             for (let id in upgrades) {
                 document.getElementById(`up${id}-level`).innerText = upgrades[id].level;
@@ -535,14 +619,47 @@
             }
         }
 
+        // Cek apakah syarat Rebirth sudah terpenuhi
+        function checkRebirthStatus() {
+            // Syarat: minimal data saat ini 500.000 dan harus mencapai atau melampaui kriteria CEO (500k total data ever)
+            if (dataInputted >= 500000 && totalDataEver >= 500000) {
+                rebirthBtn.className = "ready";
+                rebirthBtn.innerText = "🔥 AMBIL PESANGON & RESIGN (Mulai Rebirth Sekarang!)";
+            } else {
+                rebirthBtn.className = "";
+                rebirthBtn.innerText = "🔒 Resign Kerja (Butuh minimal 500.000 data saat ini)";
+            }
+        }
+
+        // EKSEKUSI REBIRTH
+        function triggerRebirth() {
+            if (dataInputted >= 500000 && totalDataEver >= 500000) {
+                if (confirm("Apakah kamu yakin mau mengajukan Resign? \n\nKamu akan mengorbankan semua data saat ini dan tingkat automasi kantor untuk memulai bisnis baru dengan bonus +20% produksi data permanen!")) {
+                    rebirthCount += 1;
+                    dataInputted = 0;
+                    totalDataEver = 0; // Reset total data putaran lalu agar bisa memanjat kasta jabatan baru dari bawah
+                    
+                    // Reset seluruh level upgrade kantor
+                    for (let id in upgrades) {
+                        upgrades[id].level = 0;
+                        upgrades[id].cost = upgrades[id].baseCost;
+                    }
+                    
+                    recalculateDPS();
+                    saveGame();
+                    updateUI();
+                    updateUpgradeButtons();
+                    alert("Selamat! Kamu resmi Resign. Sekarang kamu memulai lembaran baru sebagai Pengusaha dengan modal ilmu korporat!");
+                }
+            }
+        }
+
         function openLeaderboard() { leaderboardModal.className = 'modal show'; }
-        document.getElementById('leaderboard-modal').onclick = function(e) { if(e.target == this) closeLeaderboard(); }
         function closeLeaderboard() { leaderboardModal.className = 'modal'; }
 
         function openAchievements() {
             const listEl = document.getElementById('achifications-list');
             listEl.innerHTML = "";
-
             achievementRules.forEach(ach => {
                 const isUnlocked = totalDataEver >= ach.req;
                 const icon = isUnlocked ? ach.icon : "🔒";
@@ -562,7 +679,6 @@
             });
             achModal.className = 'modal show';
         }
-
         function closeAchievements() { achModal.className = 'modal'; }
 
         window.onclick = function(event) {
@@ -574,9 +690,7 @@
             database.ref('leaderboard').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
-
                 let players = Object.values(data);
-
                 let sortedByScore = [...players].sort((a, b) => b.score - a.score).slice(0, 5);
                 const scoreListEl = document.getElementById('leaderboard-data');
                 scoreListEl.innerHTML = sortedByScore.map(p => `<li><b>${p.username}</b>: ${p.score.toLocaleString('id-ID')} baris</li>`).join('');
@@ -597,17 +711,16 @@
             }
         }, 100);
 
-        // Interval Waktu Bermain
         setInterval(() => {
             totalPlayTime += 1;
             playtimeTextEl.innerText = formatTime(totalPlayTime);
         }, 1000);
 
-        // Loop Auto-Save (Tiap 6 Detik)
         setInterval(saveGame, 6000);
 
         window.onload = function() {
             loadGame();
+            recalculateDPS();
             updateUI();
             updateUpgradeButtons();
             listenToLeaderboards();
