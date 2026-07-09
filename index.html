@@ -10,6 +10,12 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-image: linear-gradient(rgba(243, 243, 243, 0.85), rgba(243, 243, 243, 0.85)), 
@@ -18,7 +24,6 @@
             background-position: center;
             background-attachment: fixed;
             color: #333;
-            margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -28,6 +33,7 @@
 
         h1 {
             color: #107c41; 
+            margin-top: 10px;
             margin-bottom: 5px;
             text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
         }
@@ -45,7 +51,6 @@
             font-weight: 500;
         }
 
-        /* Tombol Piala Achievements */
         .trophy-btn {
             background-color: #ffb900;
             border: none;
@@ -77,6 +82,8 @@
             gap: 20px;
             max-width: 900px;
             width: 100%;
+            position: relative;
+            z-index: 1; /* Memastikan tombol berada di lapisan atas */
         }
 
         .clicker-section, .upgrade-section, .leaderboard-section {
@@ -123,6 +130,9 @@
             transition: transform 0.05s, background-color 0.2s;
             box-shadow: 0 5px 0 #0b592e;
             margin-top: 15px;
+            outline: none;
+            position: relative;
+            z-index: 2;
         }
 
         #excel-btn:hover { background-color: #148f4c; }
@@ -152,10 +162,11 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 11px;
+            min-width: 95px;
+            text-align: center;
         }
         .upgrade-btn:disabled { background-color: #ccc; color: #666; cursor: not-allowed; }
 
-        /* Style Leaderboard */
         .leaderboard-title {
             font-size: 16px;
             font-weight: bold;
@@ -178,34 +189,38 @@
             padding-bottom: 3px;
         }
 
-        /* TAMPILAN POP-UP MODAL ACHIEVEMENTS */
+        /* MODAL FIX: display none total dan tersembunyi sepenuhnya jika tidak aktif */
         .modal {
             display: none; 
             position: fixed;
-            z-index: 999;
+            z-index: -1; /* default di paling belakang agar tidak memblokir */
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
+            opacity: 0;
+            pointer-events: none; /* tidak bisa merespon klik saat mati */
+            transition: opacity 0.2s ease;
+        }
+
+        .modal.show {
+            display: block !important;
+            z-index: 9999 !important; /* melompat ke depan saat dipanggil */
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .modal-content {
             background-color: white;
-            margin: 10% auto;
+            margin: 15% auto;
             padding: 25px;
             border-radius: 12px;
-            width: 80%;
+            width: 85%;
             max-width: 450px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             position: relative;
-            animation: popIn 0.3s ease;
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
 
         .close-btn {
@@ -244,6 +259,8 @@
             display: flex;
             gap: 15px;
             align-items: center;
+            position: relative;
+            z-index: 2;
         }
         .save-status { font-size: 12px; color: #666; }
         .reset-btn { background-color: #d83b01; color: white; border: none; padding: 5px 10px; font-size: 11px; border-radius: 4px; cursor: pointer; }
@@ -255,7 +272,6 @@
     
     <div class="subtitle-container">
         <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
-        <!-- Tombol Piala -->
         <button class="trophy-btn" onclick="openAchievements()" title="Lihat Pencapaian">🏆</button>
     </div>
     
@@ -294,9 +310,7 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeAchievements()">&times;</span>
             <h3 style="color:#107c41; margin-top: 0; border-bottom: 2px solid #ffb900; padding-bottom: 10px;">🏆 Ruang Pencapaian</h3>
-            <div id="achifications-list">
-                <!-- Daftar achievement akan dibuat otomatis lewat JavaScript -->
-            </div>
+            <div id="achifications-list"></div>
         </div>
     </div>
 
@@ -306,7 +320,7 @@
     </div>
 
     <script>
-        // === KODE FIREBASE ASLI KAMU SUDAH TERPASANG DI SINI ===
+        // === KODE FIREBASE ASLI ===
         const firebaseConfig = {
             apiKey: "AIzaSyAx2olUz_YYLEoY-GGCAXGGIwFArixUJvA",
             authDomain: "excel-clicker.firebaseapp.com",
@@ -318,11 +332,9 @@
             measurementId: "G-J0B5DSHNDJ"
         };
 
-        // Inisialisasi Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Data Game Dasar
         let playerName = "";
         let dataInputted = 0;
         let dataPerSecond = 0;
@@ -336,7 +348,6 @@
             4: { cost: 3000, dps: 100, level: 0, baseCost: 3000 }
         };
 
-        // Daftar Aturan Achievement
         const achievementRules = [
             { id: "ach_1", req: 100, name: "Karyawan Baru Teladan", desc: "Berhasil menginput 100 baris data.", icon: "📝" },
             { id: "ach_2", req: 5000, name: "Master Capek Jempol", desc: "Berhasil menginput 5.000 baris data.", icon: "⚡" },
@@ -365,9 +376,13 @@
         function loadGame() {
             let savedName = localStorage.getItem('excelClickerName');
             if (!savedName) {
-                playerName = prompt("Masukkan nama/username kamu untuk papan peringkat publik:", "Akuntan_Anonim");
-                if(!playerName || playerName.trim() === "") playerName = "User_" + Math.floor(Math.random() * 1000);
-                localStorage.setItem('excelClickerName', playerName);
+                // Menggunakan setTimeout agar prompt tidak mem-freeze loading browser
+                setTimeout(() => {
+                    playerName = prompt("Masukkan nama/username kamu untuk papan peringkat publik:", "AJ_Akuntan");
+                    if(!playerName || playerName.trim() === "") playerName = "User_" + Math.floor(Math.random() * 1000);
+                    localStorage.setItem('excelClickerName', playerName);
+                    saveGame();
+                }, 500);
             } else {
                 playerName = savedName;
             }
@@ -390,6 +405,7 @@
         }
 
         function saveGame() {
+            if (!playerName) return;
             const saveState = {
                 dataInputted: dataInputted,
                 dataPerSecond: dataPerSecond,
@@ -406,7 +422,7 @@
                     playTime: totalPlayTime
                 });
             }
-            saveStatusEl.innerText = "Auto-saved & Leaderboard disinkronkan...";
+            saveStatusEl.innerText = "Progress otomatis tersimpan...";
         }
 
         function resetGame() {
@@ -427,10 +443,12 @@
             rankTextEl.innerText = rank;
         }
 
-        clickBtn.addEventListener('click', () => {
+        clickBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             dataInputted += 1;
             totalDataEver += 1;
             updateUI();
+            updateUpgradeButtons();
         });
 
         function buyUpgrade(id) {
@@ -446,14 +464,14 @@
         }
 
         function updateUI() {
-            dataCountEl.innerText = Math.floor(dataInputted);
-            dpsCountEl.innerText = dataPerSecond;
+            dataCountEl.innerText = Math.floor(dataInputted).toLocaleString('id-ID');
+            dpsCountEl.innerText = dataPerSecond.toLocaleString('id-ID');
             playtimeTextEl.innerText = formatTime(totalPlayTime);
             updateRank();
 
             for (let id in upgrades) {
                 document.getElementById(`up${id}-level`).innerText = upgrades[id].level;
-                document.getElementById(`up${id}-btn`).innerText = `Beli: ${upgrades[id].cost}`;
+                document.getElementById(`up${id}-btn`).innerText = `Beli: ${upgrades[id].cost.toLocaleString('id-ID')}`;
             }
         }
 
@@ -464,15 +482,12 @@
             }
         }
 
-        /* FUNGSI KONTROL POPUP ACHIEVEMENT */
         function openAchievements() {
             const listEl = document.getElementById('achifications-list');
-            listEl.innerHTML = ""; // Kosongkan list lama
+            listEl.innerHTML = "";
 
             achievementRules.forEach(ach => {
                 const isUnlocked = totalDataEver >= ach.req;
-                
-                // Jika terbuka tampilkan nama asli, jika terkunci ganti jadi tanda tanya
                 const icon = isUnlocked ? ach.icon : "🔒";
                 const title = isUnlocked ? ach.name : "???";
                 const desc = isUnlocked ? ach.desc : `Kunci terbuka pada ${ach.req.toLocaleString('id-ID')} baris data.`;
@@ -488,19 +503,15 @@
                     </div>
                 `;
             });
-
-            achModal.style.display = "block";
+            achModal.classList.add('show');
         }
 
-        function closeAchievements() {
-            achModal.style.display = "none";
+        function closeAchievements() { 
+            achModal.classList.remove('show'); 
         }
 
-        // Tutup modal jika klik di luar area kotak putih
         window.onclick = function(event) {
-            if (event.target == achModal) {
-                closeAchievements();
-            }
+            if (event.target == achModal) closeAchievements();
         }
 
         function listenToLeaderboards() {
@@ -510,91 +521,41 @@
 
                 let players = Object.values(data);
 
-                // 1. Urutkan berdasarkan Data Terbanyak
                 let sortedByScore = [...players].sort((a, b) => b.score - a.score).slice(0, 5);
                 const scoreListEl = document.getElementById('leaderboard-data');
-                scoreListEl.innerHTML = sortedByScore.map(p => `<li><b>${p.username}</b>: ${p.score} baris</li>`).join('');
+                scoreListEl.innerHTML = sortedByScore.map(p => `<li><b>${p.username}</b>: ${p.score.toLocaleString('id-ID')} baris</li>`).join('');
 
-                // 2.a(COSTS.magang, gameData.magangQty);
-            btnMagang.textContent = `Beli (${costMagang.toLocaleString('id-ID')})`;
-            btnMagang.disabled = gameData.score < costMagang;
-
-            const costVba = hitungBiaya(COSTS.vba, gameData.vbaQty);
-            btnVba.textContent = `Beli (${costVba.toLocaleString('id-ID')})`;
-            btnVba.disabled = gameData.score < costVba;
-
-            // Atur tombol Rebirth
-            if (gameData.score >= rebirthCost) {
-                rebirthBtn.disabled = false;
-                rebirthBtn.textContent = `REBIRTH (Siap! -${rebirthCost.toLocaleString('id-ID')})`;
-            } else {
-                rebirthBtn.disabled = true;
-                rebirthBtn.textContent = `Butuh ${rebirthCost.toLocaleString('id-ID')} Data`;
-            }
+                let sortedByTime = [...players].sort((a, b) => b.playTime - a.playTime).slice(0, 5);
+                const timeListEl = document.getElementById('leaderboard-time');
+                timeListEl.innerHTML = sortedByTime.map(p => `<li><b>${p.username}</b>: ${formatTime(p.playTime)}</li>`).join('');
+            });
         }
 
-        // Event Listener Tombol Utama
-        clickBtn.addEventListener('click', () => {
-            gameData.score += hitungClickPower();
-            refreshUI();
-            saveData();
-        });
-
-        btnVlookup.addEventListener('click', () => {
-            const cost = hitungBiaya(COSTS.vlookup, gameData.vlookupQty);
-            if (gameData.score >= cost) {
-                gameData.score -= cost;
-                gameData.vlookupQty++;
-                refreshUI();
-                saveData();
-            }
-        });
-
-        btnMagang.addEventListener('click', () => {
-            const cost = hitungBiaya(COSTS.magang, gameData.magangQty);
-            if (gameData.score >= cost) {
-                gameData.score -= cost;
-                gameData.magangQty++;
-                refreshUI();
-                saveData();
-            }
-        });
-
-        btnVba.addEventListener('click', () => {
-            const cost = hitungBiaya(COSTS.vba, gameData.vbaQty);
-            if (gameData.score >= cost) {
-                gameData.score -= cost;
-                gameData.vbaQty++;
-                refreshUI();
-                saveData();
-            }
-        });
-
-        rebirthBtn.addEventListener('click', () => {
-            const cost = hitungBiayaRebirth();
-            if (gameData.score >= cost) {
-                gameData.score = 0;
-                gameData.vlookupQty = 0;
-                gameData.magangQty = 0;
-                gameData.vbaQty = 0;
-                gameData.rebirth += 1;
-                refreshUI();
-                saveData();
-                alert("Selamat! Rebirth sukses, jabatan naik dan multiplier klik meningkat! 🎉");
-            }
-        });
-
-        // Loop Game berjalan setiap 1 detik untuk Automasi
+        // Interval Halus 100ms
         setInterval(() => {
-            gameData.score += (hitungDPS() / 10);
-            refreshUI();
+            if (dataPerSecond > 0) {
+                dataInputted += (dataPerSecond / 10);
+                totalDataEver += (dataPerSecond / 10);
+                updateUI();
+                updateUpgradeButtons();
+            }
         }, 100);
 
-        // Autosave tiap 10 detik
-        setInterval(saveData, 10000);
+        // Interval Waktu Bermain
+        setInterval(() => {
+            totalPlayTime += 1;
+            playtimeTextEl.innerText = formatTime(totalPlayTime);
+        }, 1000);
 
-        // Inisialisasi awal saat halaman dibuka
-        window.onload = loadData;
+        // Loop Auto-Save (Tiap 6 Detik)
+        setInterval(saveGame, 6000);
+
+        window.onload = function() {
+            loadGame();
+            updateUI();
+            updateUpgradeButtons();
+            listenToLeaderboards();
+        };
     </script>
 </body>
 </html>
