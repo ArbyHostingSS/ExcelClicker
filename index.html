@@ -38,24 +38,43 @@
             text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
         }
 
-        .subtitle-container {
+        /* MENU UTAS ATAS: leaderboard baru & piala */
+        .top-menu-container {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 500px;
+            justify-content: center;
         }
 
-        .subtitle {
-            color: #444;
-            font-style: italic;
-            font-weight: 500;
+        /* Tombol Leaderboard Persegi Panjang Ujung Melengkung */
+        .leaderboard-btn {
+            background-color: #107c41;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 25px; /* Membuat ujung melengkung sempurna */
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.2s, background-color 0.2s;
+            flex: 1;
+            text-align: center;
+        }
+        .leaderboard-btn:hover {
+            background-color: #148f4c;
+            transform: scale(1.03);
         }
 
+        /* Tombol Piala Achievements */
         .trophy-btn {
             background-color: #ffb900;
             border: none;
-            font-size: 22px;
-            padding: 8px 12px;
+            font-size: 20px;
+            padding: 8px 14px;
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
@@ -80,13 +99,13 @@
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            max-width: 900px;
+            max-width: 700px; /* Dipersempit agar tampilan seimbang */
             width: 100%;
             position: relative;
-            z-index: 1; /* Memastikan tombol berada di lapisan atas */
+            z-index: 1;
         }
 
-        .clicker-section, .upgrade-section, .leaderboard-section {
+        .clicker-section, .upgrade-section {
             background-color: rgba(255, 255, 255, 0.92); 
             border: 1px solid #d1d1d1;
             border-radius: 12px;
@@ -167,8 +186,22 @@
         }
         .upgrade-btn:disabled { background-color: #ccc; color: #666; cursor: not-allowed; }
 
+        /* Style Teks Misi yang Dipindah ke Bawah */
+        .subtitle {
+            color: #555;
+            font-style: italic;
+            font-weight: 500;
+            font-size: 13px;
+            margin-top: 20px;
+            text-align: center;
+            background: rgba(255,255,255,0.6);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        /* Style Konten Leaderboard di Dalam Pop-up */
         .leaderboard-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             color: #107c41;
             border-bottom: 2px solid #107c41;
@@ -180,7 +213,7 @@
 
         ol {
             padding-left: 20px;
-            margin: 0;
+            margin: 0 0 15px 0;
             font-size: 13px;
         }
         li {
@@ -189,11 +222,11 @@
             padding-bottom: 3px;
         }
 
-        /* MODAL FIX: display none total dan tersembunyi sepenuhnya jika tidak aktif */
+        /* TAMPILAN POP-UP MODAL (LEADERBOARD & ACHIEVEMENTS) */
         .modal {
             display: none; 
             position: fixed;
-            z-index: -1; /* default di paling belakang agar tidak memblokir */
+            z-index: -1;
             left: 0;
             top: 0;
             width: 100%;
@@ -201,20 +234,20 @@
             background-color: rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
             opacity: 0;
-            pointer-events: none; /* tidak bisa merespon klik saat mati */
+            pointer-events: none;
             transition: opacity 0.2s ease;
         }
 
         .modal.show {
             display: block !important;
-            z-index: 9999 !important; /* melompat ke depan saat dipanggil */
+            z-index: 9999 !important;
             opacity: 1;
             pointer-events: auto;
         }
 
         .modal-content {
             background-color: white;
-            margin: 15% auto;
+            margin: 12% auto;
             padding: 25px;
             border-radius: 12px;
             width: 85%;
@@ -255,7 +288,7 @@
         .ach-desc { font-size: 12px; color: #666; }
 
         .system-footer {
-            margin-top: 30px;
+            margin-top: 20px;
             display: flex;
             gap: 15px;
             align-items: center;
@@ -270,8 +303,9 @@
 
     <h1>Excel Clicker 🧮</h1>
     
-    <div class="subtitle-container">
-        <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
+    <!-- Bagian Atas Baru: Tombol Persegi Panjang Melengkung & Tombol Piala -->
+    <div class="top-menu-container">
+        <button class="leaderboard-btn" onclick="openLeaderboard()">🏆 Lihat Leaderboard Publik</button>
         <button class="trophy-btn" onclick="openAchievements()" title="Lihat Pencapaian">🏆</button>
     </div>
     
@@ -294,9 +328,17 @@
             <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Macro VBA & AI (<span id="up3-level">0</span>)</span><span class="upgrade-desc">+25 data/s</span></div><button class="upgrade-btn" id="up3-btn" onclick="buyUpgrade(3)">Beli</button></div>
             <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Server Cloud (<span id="up4-level">0</span>)</span><span class="upgrade-desc">+100 data/s</span></div><button class="upgrade-btn" id="up4-btn" onclick="buyUpgrade(4)">Beli</button></div>
         </div>
+    </div>
 
-        <!-- SEKSI LEADERBOARD PUBLIK -->
-        <div class="leaderboard-section">
+    <!-- Teks Misi Sekarang Pindah Ke Bawah -->
+    <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
+
+    <!-- POP-UP MODAL LEADERBOARD (BARU) -->
+    <div id="leaderboard-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeLeaderboard()">&times;</span>
+            <h3 style="color:#107c41; margin-top: 0; border-bottom: 2px solid #107c41; padding-bottom: 10px;">📊 Papan Peringkat Global</h3>
+            
             <div class="leaderboard-title">🏆 Data Terbanyak Di Input!</div>
             <ol id="leaderboard-data"><li>Memuat data...</li></ol>
 
@@ -305,7 +347,7 @@
         </div>
     </div>
 
-    <!-- JENDELA POP-UP ACHIEVEMENTS -->
+    <!-- POP-UP MODAL ACHIEVEMENTS -->
     <div id="ach-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeAchievements()">&times;</span>
@@ -362,6 +404,7 @@
         const saveStatusEl = document.getElementById('save-status');
         const playtimeTextEl = document.getElementById('playtime-text');
         const achModal = document.getElementById('ach-modal');
+        const leaderboardModal = document.getElementById('leaderboard-modal');
 
         function formatTime(seconds) {
             if (seconds < 60) return seconds + "s";
@@ -376,7 +419,6 @@
         function loadGame() {
             let savedName = localStorage.getItem('excelClickerName');
             if (!savedName) {
-                // Menggunakan setTimeout agar prompt tidak mem-freeze loading browser
                 setTimeout(() => {
                     playerName = prompt("Masukkan nama/username kamu untuk papan peringkat publik:", "AJ_Akuntan");
                     if(!playerName || playerName.trim() === "") playerName = "User_" + Math.floor(Math.random() * 1000);
@@ -482,6 +524,15 @@
             }
         }
 
+        /* FUNGSI MODAL LEADERBOARD */
+        function openLeaderboard() {
+            leaderboardModal.className = 'modal show';
+        }
+        function closeLeaderboard() {
+            leaderboardModal.className = 'modal';
+        }
+
+        /* FUNGSI MODAL ACHIEVEMENT */
         function openAchievements() {
             const listEl = document.getElementById('achifications-list');
             listEl.innerHTML = "";
@@ -503,15 +554,17 @@
                     </div>
                 `;
             });
-            achModal.classList.add('show');
+            achModal.className = 'modal show';
         }
 
         function closeAchievements() { 
-            achModal.classList.remove('show'); 
+            achModal.className = 'modal'; 
         }
 
+        // Tutup modal jika klik luar kotak konten
         window.onclick = function(event) {
             if (event.target == achModal) closeAchievements();
+            if (event.target == leaderboardModal) closeLeaderboard();
         }
 
         function listenToLeaderboards() {
