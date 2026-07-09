@@ -78,6 +78,31 @@
         }
         .trophy-btn:hover { transform: scale(1.1) rotate(10deg); }
 
+        /* TOMBOL MASUKAN BULAT DI UJUNG KIRI ATAS */
+        .feedback-trigger-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            font-size: 22px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .feedback-trigger-btn:hover {
+            background-color: #005a9e;
+            transform: scale(1.1);
+        }
+
         .rank-badge {
             background-color: #107c41;
             color: white;
@@ -158,9 +183,32 @@
             outline: none;
             position: relative;
             z-index: 2;
+            width: 100%;
         }
         #excel-btn:hover { background-color: #148f4c; }
         #excel-btn:active { transform: translateY(5px); box-shadow: none; }
+
+        /* DESIGN AD/IKLAN BUTTON */
+        #ad-btn {
+            background-color: #ffb900;
+            color: #222;
+            border: none;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            box-shadow: 0 4px 0 #cc9400;
+            margin-top: 15px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        #ad-btn:hover { background-color: #ffa500; }
+        #ad-btn:active { transform: translateY(4px); box-shadow: none; }
 
         #rebirth-btn {
             background-color: #a0a0a0;
@@ -188,7 +236,6 @@
             100% { transform: scale(1); }
         }
 
-        /* FITUR REDEEM CODE STYLING */
         .redeem-container {
             margin-top: 15px;
             width: 100%;
@@ -217,30 +264,20 @@
         }
         .redeem-btn:hover { background-color: #005a9e; }
 
-        /* FITUR KOTAK SARAN STYLING */
-        .feedback-container {
-            margin-top: 15px;
-            width: 100%;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
+        /* DESIGN DI DALAM MODAL FEEDBACK */
+        .feedback-form-container {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-        }
-        .feedback-label {
-            font-size: 12px;
-            font-weight: bold;
-            color: #555;
-            text-align: left;
-            width: 100%;
+            gap: 12px;
+            margin-top: 10px;
         }
         .feedback-textarea {
             width: 100%;
-            height: 60px;
-            padding: 8px;
+            height: 100px;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 13px;
             resize: none;
             font-family: inherit;
         }
@@ -248,9 +285,9 @@
             background-color: #107c41;
             color: white;
             border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             align-self: flex-end;
@@ -311,7 +348,7 @@
             letter-spacing: 1px;
             margin-top: 8px;
             text-shadow: 1px 1px 1px rgba(255,255,255,0.6);
-            cursor: pointer; /* Bisa diklik rahasia buat admin */
+            cursor: pointer;
         }
 
         .leaderboard-title {
@@ -396,7 +433,6 @@
         .benefit-locked { color: #888; }
         .benefit-unlocked { color: #107c41; }
 
-        /* WISHLIST/FEEDBACK LIST UNTUK ADMIN */
         .feedback-item {
             background: #fdfdfd;
             border: 1px solid #e2e2e2;
@@ -427,6 +463,9 @@
 </head>
 <body>
 
+    <!-- TOMBOL BULAT DI POJOK KIRI ATAS -->
+    <button class="feedback-trigger-btn" onclick="openFeedbackModal()" title="Kirim Masukan">✉️</button>
+
     <h1>Excel Clicker 🧮</h1>
     
     <div class="top-menu-container">
@@ -443,19 +482,17 @@
             <div class="dps-info">(+<span id="dps-count">0</span> data/detik otomatis)</div>
             <div class="multiplier-info" id="mult-info">Efisiensi Klik: +1 data/klik</div>
             <div class="playtime-info">⏱️ Waktu Bermain: <span id="playtime-text">0s</span></div>
+            
             <button id="excel-btn">INPUT DATA (Spam Klik!)</button>
+            
+            <!-- TOMBOL SIMULASI IKLAN BERHADIAH -->
+            <button id="ad-btn" onclick="showRewardedAd()">📺 Nonton Iklan (Bonus +50k Data Gratis!)</button>
             
             <button id="rebirth-btn" onclick="triggerRebirth()">🔒 Resign Kerja (Butuh Jabatan CEO & 500k Data)</button>
 
             <div class="redeem-container">
                 <input type="text" id="redeem-input" class="redeem-input" placeholder="Masukkan Kode Redeem...">
                 <button class="redeem-btn" onclick="claimRedeemCode()">Redeem</button>
-            </div>
-
-            <div class="feedback-container">
-                <span class="feedback-label">💬 Kirim Saran/Bug Ke Developer:</span>
-                <textarea id="feedback-input" class="feedback-textarea" placeholder="Tulis saran atau masukan kamu di sini biar game makin seru..."></textarea>
-                <button class="feedback-submit-btn" onclick="sendFeedback()">Kirim Masukan</button>
             </div>
         </div>
 
@@ -476,6 +513,19 @@
     </div>
 
     <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
+
+    <!-- MODAL BARU UNTUK KOTAK SARAN / FEEDBACK -->
+    <div id="feedback-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeFeedbackModal()">&times;</span>
+            <h3 style="color:#0078d4; margin-top: 0; border-bottom: 2px solid #0078d4; padding-bottom: 10px;">💬 Kirim Saran Ke Developer</h3>
+            <div class="feedback-form-container">
+                <p style="font-size: 12px; color: #666;">Tulis saran atau masukan kamu di sini secara privat agar game ini menjadi semakin seru.</p>
+                <textarea id="feedback-input" class="feedback-textarea" placeholder="Tulis pesan kamu di sini..."></textarea>
+                <button class="feedback-submit-btn" onclick="sendFeedback()">Kirim Masukan</button>
+            </div>
+        </div>
+    </div>
 
     <div id="leaderboard-modal" class="modal">
         <div class="modal-content">
@@ -559,7 +609,7 @@
             { id: "ach_10", type: "rebirth_data", req: 10000000, name: "Monopolist Data Semesta", desc: "Sudah Rebirth & mencapai 10.000.000 data di kasta baru.", icon: "🌌", benefit: "+50% Kecepatan Total Klik & DPS Kantor" }
         ];
 
-        const redeemDatabase = { "ARBYGANTENG": 5000, "EXCELCUAN": 50000, "REBIRTHBOOSTS": 10000000 };
+        const redeemDatabase = { "ARBYGANTENG": 5000, "EXCELCUAN": 50000, "REBIRTHBOOST": 1000000 };
 
         const dataCountEl = document.getElementById('data-count');
         const dpsCountEl = document.getElementById('dps-count');
@@ -576,6 +626,7 @@
         const achModal = document.getElementById('ach-modal');
         const leaderboardModal = document.getElementById('leaderboard-modal');
         const adminModal = document.getElementById('admin-modal');
+        const feedbackModal = document.getElementById('feedback-modal');
 
         function formatTime(seconds) {
             if (seconds < 60) return seconds + "s";
@@ -695,6 +746,33 @@
             updateUI(); updateUpgradeButtons();
         });
 
+        // FUNGSI JAVASCRIPT LOGIKA IKLAN BARU
+        function showRewardedAd() {
+            // Menonaktifkan tombol sementara agar tidak di-spam click saat memproses
+            const adBtn = document.getElementById('ad-btn');
+            adBtn.disabled = true;
+            adBtn.innerText = "⏳ Memuat Iklan...";
+
+            setTimeout(() => {
+                // Simulasi iklan selesai ditonton
+                alert("🎉 Iklan Berhasil Ditonton! Kamu mendapatkan bonus +50.000 baris data gratis.");
+                
+                let adReward = 50000;
+                dataInputted += adReward;
+                totalDataEver += adReward;
+                
+                // Sinkronisasi data game
+                recalculateDPS();
+                saveGame();
+                updateUI();
+                updateUpgradeButtons();
+
+                // Mengembalikan tombol iklan ke semula
+                adBtn.disabled = false;
+                adBtn.innerText = "📺 Nonton Iklan (Bonus +50k Data Gratis!)";
+            }, 2000); // Simulasi buffering iklan selama 2 detik
+        }
+
         function buyUpgrade(id) {
             let upgrade = upgrades[id]; let mods = getAchievementModifiers();
             let finalCost = Math.floor(upgrade.cost * mods.discount);
@@ -771,7 +849,6 @@
             } else { alert("❌ Kode redeem salah atau sudah kedaluwarsa!"); }
         }
 
-        // LOGIKA KOTAK SARAN PRIVAT (KIRIM KE FIREBASE)
         function sendFeedback() {
             const inputEl = document.getElementById('feedback-input');
             const text = inputEl.value.trim();
@@ -785,13 +862,13 @@
                 }).then(() => {
                     alert("🎉 Terima kasih banyak! Masukan kamu sudah dikirim secara privat ke AJ (Developer).");
                     inputEl.value = "";
+                    closeFeedbackModal();
                 }).catch(() => {
                     alert("Gagal mengirim saran. Coba cek koneksi internet kamu.");
                 });
             }
         }
 
-        // LOGIKA KHUSUS AJ (BACA SARAN PAKAI PASSWORD)
         function checkAdminAccess() {
             const pass = prompt("Masukkan Password Khusus Admin/Developer untuk melihat saran:");
             if (pass === "ARBYADMIN123") {
@@ -811,7 +888,7 @@
                     const data = snapshot.val();
                     if (!data) { listEl.innerHTML = "Belum ada saran atau masukan yang masuk dari pemain."; return; }
                     
-                    let items = Object.values(data).reverse(); // Urutkan dari yang paling baru
+                    let items = Object.values(data).reverse();
                     listEl.innerHTML = items.map(f => `
                         <div class="feedback-item">
                             <div class="feedback-meta">👤 Pemain: ${f.sender} | 📅 Waktu: ${f.timestamp}</div>
@@ -822,6 +899,10 @@
             }
         }
         function closeAdminModal() { adminModal.className = 'modal'; }
+
+        // KONTROL UNTUK MODAL FEEDBACK BARU
+        function openFeedbackModal() { feedbackModal.className = 'modal show'; }
+        function closeFeedbackModal() { feedbackModal.className = 'modal'; }
 
         function openLeaderboard() { leaderboardModal.className = 'modal show'; }
         function closeLeaderboard() { leaderboardModal.className = 'modal'; }
@@ -849,6 +930,7 @@
             if (event.target == achModal) closeAchievements();
             if (event.target == leaderboardModal) closeLeaderboard();
             if (event.target == adminModal) closeAdminModal();
+            if (event.target == feedbackModal) closeFeedbackModal();
         }
 
         function listenToLeaderboards() {
