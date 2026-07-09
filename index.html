@@ -67,7 +67,6 @@
             transform: scale(1.03);
         }
 
-        /* TOMBOL FEEDBACK BULAT DI POJOK KIRI ATAS LAYAR */
         .feedback-trigger-btn {
             position: fixed;
             top: 20px;
@@ -92,7 +91,6 @@
             transform: scale(1.1);
         }
 
-        /* TOMBOL TROPHY/ACHIEVEMENTS BULAT DI POJOK KANAN ATAS LAYAR */
         .trophy-trigger-btn {
             position: fixed;
             top: 20px;
@@ -560,6 +558,16 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // INSTANSI AUDIO (MENGGUNAKAN SUMBER BEBAS ROYALTI ONLINE)
+        const bgMusic = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+        bgMusic.loop = true;
+        bgMusic.volume = 0.3; // Volume backsound agak pelan biar nyaman (30%)
+
+        const clickSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav");
+        clickSound.volume = 0.6; // Volume efek klik tik-tik (60%)
+
+        let bgMusicStarted = false;
+
         let playerName = "";
         let dataInputted = 0;
         let dataPerSecond = 0;
@@ -721,8 +729,20 @@
             return 1 + (rebirthCount * baseRate);
         }
 
+        // AKSI INTERAKSI KLIK (DENGAN AUDIO TRIGGER)
         clickBtn.addEventListener('click', (e) => {
             e.preventDefault();
+
+            // Jalankan Musik Backsound Pas Klik Pertama Kali (Bypass Kebijakan Autoplay Browser)
+            if (!bgMusicStarted) {
+                bgMusic.play().catch(err => console.log("Gagal memutar audio: ", err));
+                bgMusicStarted = true;
+            }
+
+            // Memutar Efek Suara Klik Mouse Instan (Reset waktu ke 0 biar bisa di-spam tanpa telat)
+            clickSound.currentTime = 0;
+            clickSound.play().catch(err => console.log("Gagal memutar sfx klik: ", err));
+
             let mods = getAchievementModifiers();
             let clickValue = 1 * getRebirthMultiplier() * mods.clickBonus;
             dataInputted += clickValue; totalDataEver += clickValue;
