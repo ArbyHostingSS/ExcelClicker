@@ -24,17 +24,20 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            box-sizing: border-box;
         }
 
         h1 {
             color: #107c41; 
             margin-bottom: 5px;
             text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            text-align: center;
         }
 
         .subtitle-container {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -43,49 +46,74 @@
             color: #444;
             font-style: italic;
             font-weight: 500;
+            text-align: center;
         }
 
-        /* Tombol Piala Achievements */
-        .trophy-btn {
+        /* Tombol Navigasi Atas */
+        .top-nav-btn {
             background-color: #ffb900;
             border: none;
-            font-size: 22px;
-            padding: 8px 12px;
+            font-size: 18px;
+            padding: 10px 14px;
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: transform 0.2s;
         }
-        .trophy-btn:hover {
-            transform: scale(1.1) rotate(10deg);
+        .top-nav-btn:hover { transform: scale(1.1); }
+        
+        .text-nav-btn {
+            background-color: #107c41;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: background-color 0.2s;
+        }
+        .text-nav-btn:hover { background-color: #148f4c; }
+
+        .info-badges {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        .rank-badge {
-            background-color: #107c41;
+        .rank-badge, .rebirth-badge {
             color: white;
             padding: 6px 15px;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
-            margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .rank-badge { background-color: #107c41; }
+        .rebirth-badge { background-color: #7c103e; }
+
+        /* Tampilan Utama Game */
+        #game-interface {
+            display: none; /* Disembunyikan sampai login selesai */
+            width: 100%;
+            max-width: 700px;
         }
 
         .container {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 20px;
-            max-width: 900px;
             width: 100%;
         }
 
-        .clicker-section, .upgrade-section, .leaderboard-section {
+        .clicker-section, .upgrade-section {
             background-color: rgba(255, 255, 255, 0.92); 
             border: 1px solid #d1d1d1;
             border-radius: 12px;
             padding: 22px;
-            flex: 1;
-            min-width: 280px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             backdrop-filter: blur(4px); 
         }
@@ -102,12 +130,13 @@
             font-weight: bold;
             margin-bottom: 5px;
             color: #107c41;
+            text-align: center;
         }
 
-        .dps-info, .playtime-info {
+        .dps-info, .playtime-info, .click-info {
             font-size: 13px;
             color: #555;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 500;
         }
 
@@ -123,10 +152,60 @@
             transition: transform 0.05s, background-color 0.2s;
             box-shadow: 0 5px 0 #0b592e;
             margin-top: 15px;
+            width: 80%;
+            max-width: 300px;
         }
 
         #excel-btn:hover { background-color: #148f4c; }
         #excel-btn:active { transform: translateY(5px); box-shadow: none; }
+
+        /* REBIRTH PANEL */
+        .rebirth-panel {
+            margin-top: 20px;
+            border-top: 2px dashed #ddd;
+            padding-top: 15px;
+            width: 100%;
+            text-align: center;
+        }
+        #rebirth-btn {
+            background-color: #7c103e;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #4d0a26;
+            width: 100%;
+        }
+        #rebirth-btn:disabled { background-color: #ccc; box-shadow: none; cursor: not-allowed; color: #666; }
+
+        .ads-container {
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        #ads-btn {
+            background-color: #ffb900;
+            color: #333;
+            border: none;
+            padding: 10px 15px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #cc9400;
+            width: 100%;
+        }
+        #ads-btn:disabled { background-color: #ccc; box-shadow: none; color: #666; cursor: not-allowed; }
+
+        #buff-timer {
+            font-size: 12px;
+            color: #d83b01;
+            font-weight: bold;
+            margin-top: 5px;
+            display: none;
+        }
 
         .upgrade-item {
             display: flex;
@@ -155,30 +234,7 @@
         }
         .upgrade-btn:disabled { background-color: #ccc; color: #666; cursor: not-allowed; }
 
-        /* Style Leaderboard */
-        .leaderboard-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #107c41;
-            border-bottom: 2px solid #107c41;
-            padding-bottom: 5px;
-            margin-bottom: 10px;
-            margin-top: 15px;
-        }
-        .leaderboard-title:first-child { margin-top: 0; }
-
-        ol {
-            padding-left: 20px;
-            margin: 0;
-            font-size: 13px;
-        }
-        li {
-            margin-bottom: 5px;
-            border-bottom: 1px dashed #eee;
-            padding-bottom: 3px;
-        }
-
-        /* TAMPILAN POP-UP MODAL ACHIEVEMENTS */
+        /* UI STRUKTUR POP-UP MODAL */
         .modal {
             display: none; 
             position: fixed;
@@ -196,11 +252,13 @@
             margin: 10% auto;
             padding: 25px;
             border-radius: 12px;
-            width: 80%;
+            width: 85%;
             max-width: 450px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             position: relative;
             animation: popIn 0.3s ease;
+            max-height: 75vh;
+            overflow-y: auto;
         }
 
         @keyframes popIn {
@@ -216,7 +274,20 @@
             cursor: pointer;
             color: #666;
         }
-        .close-btn:hover { color: #333; }
+
+        .leaderboard-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #107c41;
+            border-bottom: 2px solid #107c41;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            margin-top: 15px;
+        }
+        .leaderboard-title:first-child { margin-top: 0; }
+
+        ol { padding-left: 20px; margin: 0; font-size: 13px; }
+        li { margin-bottom: 5px; border-bottom: 1px dashed #eee; padding-bottom: 3px; }
 
         .achievement-row {
             display: flex;
@@ -228,22 +299,92 @@
             border-radius: 8px;
             border-left: 5px solid #ccc;
         }
-
-        .achievement-row.unlocked {
-            border-left-color: #ffb900;
-            background: #fffdf3;
-        }
-
+        .achievement-row.unlocked { border-left-color: #ffb900; background: #fffdf3; }
         .ach-icon { font-size: 24px; }
         .ach-details { display: flex; flex-direction: column; }
         .ach-title { font-weight: bold; font-size: 14px; }
         .ach-desc { font-size: 12px; color: #666; }
+
+        /* SIMULASI IKLAN OVERLAY */
+        .ads-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            color: white;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .ads-countdown { font-size: 48px; font-weight: bold; color: #ffb900; margin-top: 15px; }
+
+        /* KODE BARU: INTERFACE BELAJAR INPUT NAMA (UI AWAL) */
+        #name-interface {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            max-width: 400px;
+            width: 100%;
+            margin-top: 10vh;
+            text-align: center;
+            border: 1px solid #d1d1d1;
+        }
+        .name-input {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #107c41;
+            border-radius: 6px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            outline: none;
+        }
+        .start-btn {
+            background-color: #107c41;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 85%;
+            transition: background-color 0.2s;
+        }
+        .start-btn:hover { background-color: #148f4c; }
+
+        /* KODE BARU: Watermark Pembuat */
+        .dev-credit {
+            font-size: 11px;
+            color: #666;
+            margin-top: 25px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            width: 100%;
+        }
 
         .system-footer {
             margin-top: 30px;
             display: flex;
             gap: 15px;
             align-items: center;
+            justify-content: center;
         }
         .save-status { font-size: 12px; color: #666; }
         .reset-btn { background-color: #d83b01; color: white; border: none; padding: 5px 10px; font-size: 11px; border-radius: 4px; cursor: pointer; }
@@ -251,36 +392,81 @@
 </head>
 <body>
 
-    <h1>Excel Clicker 🧮</h1>
-    
-    <div class="subtitle-container">
-        <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
-        <!-- Tombol Piala -->
-        <button class="trophy-btn" onclick="openAchievements()" title="Lihat Pencapaian">🏆</button>
+    <!-- KODE BARU: TAMPILAN AWAL INPUT NAMA PLAYER -->
+    <div id="name-interface">
+        <h2 style="color: #107c41; margin: 0;">Excel Clicker 🧮</h2>
+        <p style="font-size: 13px; color: #555; margin-top: 5px;">Silakan isi ID Akuntan Gabut Anda</p>
+        <input type="text" id="username-field" class="name-input" placeholder="Masukkan Username..." maxlength="15">
+        <button class="start-btn" onclick="submitPlayerName()">Masuk Kantor</button>
+        
+        <!-- Tulisan Pembuat sesuai request -->
+        <div class="dev-credit">Development By Arby X GeminiAi</div>
     </div>
-    
-    <div class="rank-badge">Jabatan: <span id="rank-text">Anak Magang Fotokopi</span></div>
 
-    <div class="container">
-        <!-- SEKSI UTAMA -->
-        <div class="clicker-section">
-            <div class="counter"><span id="data-count">0</span> Baris Data</div>
-            <div class="dps-info">(+<span id="dps-count">0</span> data/detik otomatis)</div>
-            <div class="playtime-info">⏱️ Waktu Bermain: <span id="playtime-text">0s</span></div>
-            <button id="excel-btn">INPUT DATA (Spam Klik!)</button>
+
+    <!-- TAMPILAN UTAMA GAME (DIBUKA SETELAH INPUT NAMA) -->
+    <div id="game-interface">
+        <h1>Excel Clicker 🧮</h1>
+        
+        <div class="subtitle-container">
+            <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
+            <!-- Tombol Ruang Pencapaian -->
+            <button class="top-nav-btn" onclick="openAchievements()" title="Lihat Pencapaian">🏆</button>
+            <!-- KODE BARU: Tombol Papan Peringkat Pop-up -->
+            <button class="text-nav-btn" onclick="openLeaderboard()">Papan Peringkat</button>
+        </div>
+        
+        <div class="info-badges">
+            <div class="rank-badge">Jabatan: <span id="rank-text">Anak Magang Fotokopi</span></div>
+            <!-- KODE BARU: Status Buff Rebirth -->
+            <div class="rebirth-badge">Rebirth: <span id="rebirth-level-text">0</span>x (Klik Multiplier: x<span id="click-mult-text">1</span>)</div>
         </div>
 
-        <!-- SEKSI UPGRADE -->
-        <div class="upgrade-section">
-            <h3 style="margin-top: 0; color: #333; border-bottom: 2px solid #107c41; padding-bottom: 5px;">Automasi Kantor</h3>
-            <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Rumus VLOOKUP (<span id="up1-level">0</span>)</span><span class="upgrade-desc">+1 data/s</span></div><button class="upgrade-btn" id="up1-btn" onclick="buyUpgrade(1)">Beli</button></div>
-            <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Anak Magang (<span id="up2-level">0</span>)</span><span class="upgrade-desc">+5 data/s</span></div><button class="upgrade-btn" id="up2-btn" onclick="buyUpgrade(2)">Beli</button></div>
-            <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Macro VBA & AI (<span id="up3-level">0</span>)</span><span class="upgrade-desc">+25 data/s</span></div><button class="upgrade-btn" id="up3-btn" onclick="buyUpgrade(3)">Beli</button></div>
-            <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Server Cloud (<span id="up4-level">0</span>)</span><span class="upgrade-desc">+100 data/s</span></div><button class="upgrade-btn" id="up4-btn" onclick="buyUpgrade(4)">Beli</button></div>
+        <div class="container">
+            <!-- SEKSI KLIK UTAMA -->
+            <div class="clicker-section">
+                <div class="counter"><span id="data-count">0</span> Baris Data</div>
+                <div class="dps-info">(+<span id="dps-count">0</span> data/detik otomatis)</div>
+                <div class="click-info">Nilai Per Klik: +<span id="click-val-text">1</span> baris</div>
+                <div class="playtime-info">⏱️ Waktu Bermain: <span id="playtime-text">0s</span></div>
+                
+                <button id="excel-btn">INPUT DATA (Spam Klik!)</button>
+
+                <!-- STRUKTUR REBIRTH PANEL -->
+                <div class="rebirth-panel">
+                    <p style="font-size: 11px; margin: 0 0 8px 0; color: #555;">Butuh <b>25,000</b> baris untuk Kelahiran Kembali</p>
+                    <button id="rebirth-btn" onclick="triggerRebirth()">Kelahiran Kembali (Rebirth)</button>
+                </div>
+
+                <!-- Iklan Berhadiah -->
+                <div class="ads-container">
+                    <button id="ads-btn" onclick="startRewardedAd()">📺 Tonton Iklan Gabut (Buff DPS 2x Lipat!)</button>
+                    <div id="buff-timer">🔥 Kopi Hitam Aktif: Sisa <span id="buff-countdown">0</span> detik!</div>
+                </div>
+            </div>
+
+            <!-- SEKSI UPGRADE UTAMA -->
+            <div class="upgrade-section">
+                <h3 style="margin-top: 0; color: #333; border-bottom: 2px solid #107c41; padding-bottom: 5px;">Automasi Kantor</h3>
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Rumus VLOOKUP (<span id="up1-level">0</span>)</span><span class="upgrade-desc">+1 data/s</span></div><button class="upgrade-btn" id="up1-btn" onclick="buyUpgrade(1)">Beli</button></div>
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Anak Magang (<span id="up2-level">0</span>)</span><span class="upgrade-desc">+5 data/s</span></div><button class="upgrade-btn" id="up2-btn" onclick="buyUpgrade(2)">Beli</button></div>
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Macro VBA & AI (<span id="up3-level">0</span>)</span><span class="upgrade-desc">+25 data/s</span></div><button class="upgrade-btn" id="up3-btn" onclick="buyUpgrade(3)">Beli</button></div>
+                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Server Cloud (<span id="up4-level">0</span>)</span><span class="upgrade-desc">+100 data/s</span></div><button class="upgrade-btn" id="up4-btn" onclick="buyUpgrade(4)">Beli</button></div>
+            </div>
         </div>
 
-        <!-- SEKSI LEADERBOARD PUBLIK -->
-        <div class="leaderboard-section">
+        <div class="system-footer">
+            <span class="save-status" id="save-status">Progress dimuat...</span>
+            <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+        </div>
+    </div>
+
+    <!-- KODE BARU: JENDELA POP-UP LEADERBOARD -->
+    <div id="lead-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeLeaderboard()">&times;</span>
+            <h3 style="color:#107c41; margin-top: 0; border-bottom: 2px solid #107c41; padding-bottom: 10px;">📊 Papan Peringkat Global</h3>
+            
             <div class="leaderboard-title">🏆 Data Terbanyak Di Input!</div>
             <ol id="leaderboard-data"><li>Memuat data...</li></ol>
 
@@ -291,6 +477,70 @@
 
     <!-- JENDELA POP-UP ACHIEVEMENTS -->
     <div id="ach-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeAchievements()">&times;</span>
+            <h3 style="color:#107c41; margin-top: 0; border-bottom: 2px solid #ffb900; padding-bottom: 10px;">🏆 Ruang Pencapaian</h3>
+            <div id="achifications-list"></div>
+        </div>
+    </div>
+
+    <!-- POP UP SIMULASI LAYAR IKLAN -->
+    <div id="ads-screen" class="ads-overlay">
+        <div>📺 Sedang memuat Iklan Pelatihan Pajak...</div>
+        <div class="ads-countdown" id="ad-timer">5</div>
+        <div style="font-size: 13px; margin-top: 10px; color: #aaa;">Simulasi Iklan Berhadiah</div>
+    </div>
+
+    <script>
+        // === KONFIGURASI FIREBASE ASLI KAMU ===
+        const firebaseConfig = {
+            apiKey: "AIzaSyAx2olUz_YYLEoY-GGCAXGGIwFArixUJvA",
+            authDomain: "excel-clicker.firebaseapp.com",
+            databaseURL: "https://excel-clicker-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "excel-clicker",
+            storageBucket: "excel-clicker.firebasestorage.app",
+            messagingSenderId: "14164257498",
+            appId: "1:14164257498:web:8067ac5d301f447e95d3e3",
+            measurementId: "G-J0B5DSHNDJ"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Data Game Dasar
+        let playerName = "";
+        let dataInputted = 0;
+        let dataPerSecond = 0;
+        let totalDataEver = 0;
+        let totalPlayTime = 0; 
+        
+        // KODE BARU: Variabel Rebirth & Multiplier
+        let rebirthCount = 0;
+        let clickPower = 1;
+
+        let isBuffActive = false;
+        let buffTimeRemaining = 0;
+
+        let upgrades = {
+            1: { cost: 15, dps: 1, level: 0, baseCost: 15 },
+            2: { cost: 100, dps: 5, level: 0, baseCost: 100 },
+            3: { cost: 500, dps: 25, level: 0, baseCost: 500 },
+            4: { cost: 3000, dps: 100, level: 0, baseCost: 3000 }
+        };
+
+        const achievementRules = [
+            { id: "ach_1", req: 100, name: "Karyawan Baru Teladan", desc: "Berhasil menginput 100 baris data.", icon: "📝" },
+            { id: "ach_2", req: 5000, name: "Master Capek Jempol", desc: "Berhasil menginput 5.000 baris data.", icon: "⚡" },
+            { id: "ach_3", req: 25000, name: "Kandidat Rebirth Kantor", desc: "Berhasil membuka syarat melakukan Rebirth.", icon: "⏳" },
+            { id: "ach_4", req: 500000, name: "Penguasa Korporat Gabut", desc: "Mencapai total 500.000 baris data.", icon: "👑" }
+        ];
+
+        const dataCountEl = document.getElementById('data-count');
+        const dpsCountEl = document.getElementById('dps-count');
+        const clickBtn = document.getElementById('excel-btn');
+        const rankTextEl = document.getElementById('rank-text');
+        const saveStatusEl = document.getElementById('save-status');
+        const playtimeTextEl = document.getElementById('playtime-text id="ach-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeAchievements()">&times;</span>
             <h3 style="color:#107c41; margin-top: 0; border-bottom: 2px solid #ffb900; padding-bottom: 10px;">🏆 Ruang Pencapaian</h3>
