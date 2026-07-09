@@ -3,545 +3,402 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel Clicker: Akuntan Gabut Tycoon</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
+    <title>Excel Clicker - Rebirth Update</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-image: linear-gradient(rgba(243, 243, 243, 0.85), rgba(243, 243, 243, 0.85)), 
-                              url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #333;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #111;
+            color: #fff;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
-            box-sizing: border-box;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: #222;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border: 2px solid #107c41;
         }
 
         h1 {
-            color: #107c41; 
-            margin-bottom: 5px;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-            text-align: center;
-        }
-
-        .subtitle-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .subtitle {
-            color: #444;
-            font-style: italic;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        /* Tombol Navigasi Atas */
-        .top-nav-btn {
-            background-color: #ffb900;
-            border: none;
-            font-size: 18px;
-            padding: 10px 14px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            transition: transform 0.2s;
-        }
-        .top-nav-btn:hover { transform: scale(1.1); }
-        
-        .text-nav-btn {
-            background-color: #107c41;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            transition: background-color 0.2s;
-        }
-        .text-nav-btn:hover { background-color: #148f4c; }
-
-        .info-badges {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .rank-badge, .rebirth-badge {
-            color: white;
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .rank-badge { background-color: #107c41; }
-        .rebirth-badge { background-color: #7c103e; }
-
-        /* Tampilan Utama Game */
-        #game-interface {
-            display: none; /* Disembunyikan sampai login selesai */
-            width: 100%;
-            max-width: 700px;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 100%;
-        }
-
-        .clicker-section, .upgrade-section {
-            background-color: rgba(255, 255, 255, 0.92); 
-            border: 1px solid #d1d1d1;
-            border-radius: 12px;
-            padding: 22px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            backdrop-filter: blur(4px); 
-        }
-
-        .clicker-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .counter {
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 24px;
             margin-bottom: 5px;
             color: #107c41;
-            text-align: center;
-        }
-
-        .dps-info, .playtime-info, .click-info {
-            font-size: 13px;
-            color: #555;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        #excel-btn {
-            background-color: #107c41;
-            color: white;
-            border: none;
-            padding: 18px 35px;
-            font-size: 18px;
+            text-transform: uppercase;
             font-weight: bold;
+        }
+
+        .sub-title {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .stats-panel {
+            background: #1a1a1a;
+            padding: 15px;
             border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.05s, background-color 0.2s;
-            box-shadow: 0 5px 0 #0b592e;
-            margin-top: 15px;
-            width: 80%;
-            max-width: 300px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
         }
 
-        #excel-btn:hover { background-color: #148f4c; }
-        #excel-btn:active { transform: translateY(5px); box-shadow: none; }
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px dashed #333;
+            font-size: 14px;
+        }
 
-        /* REBIRTH PANEL */
-        .rebirth-panel {
-            margin-top: 20px;
-            border-top: 2px dashed #ddd;
-            padding-top: 15px;
+        .stat-line:last-child {
+            border-bottom: none;
+        }
+
+        .main-score {
+            font-size: 28px;
+            font-weight: bold;
+            color: #107c41;
+            margin: 10px 0;
+        }
+
+        .click-btn {
             width: 100%;
-            text-align: center;
-        }
-        #rebirth-btn {
-            background-color: #7c103e;
+            padding: 20px;
+            border-radius: 8px;
+            border: none;
+            background: #107c41;
             color: white;
-            border: none;
-            padding: 12px 20px;
+            font-size: 16px;
             font-weight: bold;
-            border-radius: 6px;
             cursor: pointer;
-            box-shadow: 0 4px 0 #4d0a26;
-            width: 100%;
-        }
-        #rebirth-btn:disabled { background-color: #ccc; box-shadow: none; cursor: not-allowed; color: #666; }
-
-        .ads-container {
-            margin-top: 15px;
-            width: 100%;
+            box-shadow: 0 4px 15px rgba(16, 124, 65, 0.4);
+            transition: background 0.2s, transform 0.1s;
+            margin-bottom: 20px;
+            text-transform: uppercase;
         }
 
-        #ads-btn {
-            background-color: #ffb900;
-            color: #333;
-            border: none;
-            padding: 10px 15px;
-            font-size: 13px;
+        .click-btn:active {
+            transform: scale(0.98);
+            background: #0e6b37;
+        }
+
+        .section-title {
+            font-size: 14px;
+            color: #107c41;
+            text-align: left;
+            margin: 15px 0 8px 0;
             font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px solid #107c41;
+            padding-bottom: 3px;
+        }
+
+        .upgrade-card {
+            background: #1a1a1a;
+            padding: 12px;
             border-radius: 6px;
-            cursor: pointer;
-            box-shadow: 0 3px 0 #cc9400;
-            width: 100%;
-        }
-        #ads-btn:disabled { background-color: #ccc; box-shadow: none; color: #666; cursor: not-allowed; }
-
-        #buff-timer {
-            font-size: 12px;
-            color: #d83b01;
-            font-weight: bold;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .upgrade-item {
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: rgba(249, 249, 249, 0.8);
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 6px;
+            text-align: left;
+            border: 1px solid #333;
         }
 
-        .upgrade-info { display: flex; flex-direction: column; }
-        .upgrade-name { font-weight: bold; font-size: 13px; }
-        .upgrade-desc { font-size: 11px; color: #666; }
+        .upgrade-info {
+            flex-grow: 1;
+        }
 
-        .upgrade-btn {
-            background-color: #0078d4; 
-            color: white;
-            border: none;
+        .upgrade-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .upgrade-desc {
+            font-size: 11px;
+            color: #aaa;
+        }
+
+        .buy-btn {
             padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 11px;
-        }
-        .upgrade-btn:disabled { background-color: #ccc; color: #666; cursor: not-allowed; }
-
-        /* UI STRUKTUR POP-UP MODAL */
-        .modal {
-            display: none; 
-            position: fixed;
-            z-index: 999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 25px;
-            border-radius: 12px;
-            width: 85%;
-            max-width: 450px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            position: relative;
-            animation: popIn 0.3s ease;
-            max-height: 75vh;
-            overflow-y: auto;
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .close-btn {
-            position: absolute;
-            right: 20px;
-            top: 15px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .leaderboard-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #107c41;
-            border-bottom: 2px solid #107c41;
-            padding-bottom: 5px;
-            margin-bottom: 10px;
-            margin-top: 15px;
-        }
-        .leaderboard-title:first-child { margin-top: 0; }
-
-        ol { padding-left: 20px; margin: 0; font-size: 13px; }
-        li { margin-bottom: 5px; border-bottom: 1px dashed #eee; padding-bottom: 3px; }
-
-        .achievement-row {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: #f9f9f9;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            border-left: 5px solid #ccc;
-        }
-        .achievement-row.unlocked { border-left-color: #ffb900; background: #fffdf3; }
-        .ach-icon { font-size: 24px; }
-        .ach-details { display: flex; flex-direction: column; }
-        .ach-title { font-weight: bold; font-size: 14px; }
-        .ach-desc { font-size: 12px; color: #666; }
-
-        /* SIMULASI IKLAN OVERLAY */
-        .ads-overlay {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.9);
-            color: white;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .ads-countdown { font-size: 48px; font-weight: bold; color: #ffb900; margin-top: 15px; }
-
-        /* UI AWAL INPUT NAMA PLAYER */
-        #name-interface {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            max-width: 400px;
-            width: 100%;
-            margin-top: 10vh;
-            text-align: center;
-            border: 1px solid #d1d1d1;
-        }
-        .name-input {
-            width: 80%;
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid #107c41;
-            border-radius: 6px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            text-align: center;
-            outline: none;
-        }
-        .start-btn {
-            background-color: #107c41;
-            color: white;
+            background: #333;
+            color: #fff;
             border: none;
-            padding: 12px 25px;
-            font-size: 15px;
+            border-radius: 4px;
             font-weight: bold;
-            border-radius: 6px;
             cursor: pointer;
-            width: 85%;
-            transition: background-color 0.2s;
+            font-size: 12px;
+            min-width: 90px;
+            text-align: center;
         }
-        .start-btn:hover { background-color: #148f4c; }
 
-        /* Watermark Pembuat */
-        .dev-credit {
-            font-size: 11px;
-            color: #666;
-            margin-top: 25px;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
+        .buy-btn:not(:disabled):hover {
+            background: #107c41;
+        }
+
+        .buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .rebirth-btn {
+            background: linear-gradient(135deg, #805ad5, #b83280);
+            color: white;
             width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
         }
 
-        .system-footer {
-            margin-top: 30px;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
+        .rebirth-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+            opacity: 0.6;
         }
-        .save-status { font-size: 12px; color: #666; }
-        .reset-btn { background-color: #d83b01; color: white; border: none; padding: 5px 10px; font-size: 11px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="name-interface">
-        <h2 style="color: #107c41; margin: 0;">Excel Clicker 🧮</h2>
-        <p style="font-size: 13px; color: #555; margin-top: 5px;">Silakan isi ID Akuntan Gabut Anda</p>
-        <input type="text" id="username-field" class="name-input" placeholder="Masukkan Username..." maxlength="15">
-        <button class="start-btn" onclick="submitPlayerName()">Masuk Kantor</button>
-        
-        <div class="dev-credit">Development By Arby X GeminiAi</div>
-    </div>
+    <div class="game-container">
+        <h1>EXCEL CLICKER 📊</h1>
+        <div class="sub-title">Misi: Menginput seluruh data di dunia sambil gabut</div>
 
-
-    <div id="game-interface">
-        <h1>Excel Clicker 🧮</h1>
-        
-        <div class="subtitle-container">
-            <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
-            <button class="top-nav-btn" onclick="openAchievements()" title="Lihat Pencapaian">🏆</button>
-            <button class="text-nav-btn" onclick="openLeaderboard()">Papan Peringkat</button>
-        </div>
-        
-        <div class="info-badges">
-            <div class="rank-badge">Jabatan: <span id="rank-text">Anak Magang Fotokopi</span></div>
-            <div class="rebirth-badge">Rebirth: <span id="rebirth-level-text">0</span>x (Klik Multiplier: x<span id="click-mult-text">1</span>)</div>
-        </div>
-
-        <div class="container">
-            <div class="clicker-section">
-                <div class="counter"><span id="data-count">0</span> Baris Data</div>
-                <div class="dps-info">(+<span id="dps-count">0</span> data/detik otomatis)</div>
-                <div class="click-info">Nilai Per Klik: +<span id="click-val-text">1</span> baris</div>
-                <div class="playtime-info">⏱️ Waktu Bermain: <span id="playtime-text">0s</span></div>
-                
-                <button id="excel-btn">INPUT DATA (Spam Klik!)</button>
-
-                <div class="rebirth-panel">
-                    <p style="font-size: 11px; margin: 0 0 8px 0; color: #555;">Butuh <b>25,000</b> baris untuk Kelahiran Kembali</p>
-                    <button id="rebirth-btn" onclick="triggerRebirth()">Kelahiran Kembali (Rebirth)</button>
-                </div>
-
-                <div class="ads-container">
-                    <button id="ads-btn" onclick="startRewardedAd()">📺 Tonton Iklan Gabut (Buff DPS 2x Lipat!)</button>
-                    <div id="buff-timer">🔥 Kopi Hitam Aktif: Sisa <span id="buff-countdown">0</span> detik!</div>
-                </div>
+        <div class="stats-panel">
+            <div class="stat-line">
+                <span>Jabatan:</span>
+                <span id="rank-text">Anak Magang Fotokopi</span>
             </div>
-
-            <div class="upgrade-section">
-                <h3 style="margin-top: 0; color: #333; border-bottom: 2px solid #107c41; padding-bottom: 5px;">Automasi Kantor</h3>
-                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Rumus VLOOKUP (<span id="up1-level">0</span>)</span><span class="upgrade-desc">+1 data/s</span></div><button class="upgrade-btn" id="up1-btn" onclick="buyUpgrade(1)">Beli</button></div>
-                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Anak Magang (<span id="up2-level">0</span>)</span><span class="upgrade-desc">+5 data/s</span></div><button class="upgrade-btn" id="up2-btn" onclick="buyUpgrade(2)">Beli</button></div>
-                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Macro VBA & AI (<span id="up3-level">0</span>)</span><span class="upgrade-desc">+25 data/s</span></div><button class="upgrade-btn" id="up3-btn" onclick="buyUpgrade(3)">Beli</button></div>
-                <div class="upgrade-item"><div class="upgrade-info"><span class="upgrade-name">Server Cloud (<span id="up4-level">0</span>)</span><span class="upgrade-desc">+100 data/s</span></div><button class="upgrade-btn" id="up4-btn" onclick="buyUpgrade(4)">Beli</button></div>
+            <div class="stat-line">
+                <span>Rebirth:</span>
+                <span id="rebirth-text">0x (Multiplier: x1)</span>
             </div>
+            <div class="stat-line">
+                <span>Nilai Per Klik:</span>
+                <span id="click-power-text">+1 Baris</span>
+            </div>
+            <div class="stat-line">
+                <span>Automasi (DPS):</span>
+                <span id="dps-text">+0 data/detik</span>
+            </div>
+            <div class="main-score"><span id="score-text">0</span> Baris Data</div>
         </div>
 
-        <div class="system-footer">
-            <span class="save-status" id="save-status">Progress dimuat...</span>
-            <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+        <button class="click-btn" id="click-trigger">INPUT DATA (Spam Klik)</button>
+
+        <div class="section-title">Kelahiran Kembali</div>
+        <button class="rebirth-btn" id="rebirth-trigger" disabled>REBIRTH (Butuh 25.000 Data)</button>
+
+        <div class="section-title">Automasi Kantor</div>
+        
+        <!-- Upgrade 1 -->
+        <div class="upgrade-card">
+            <div class="upgrade-info">
+                <div class="upgrade-name">Rumus VLOOKUP</div>
+                <div class="upgrade-desc">Auto +1 data/detik</div>
+            </div>
+            <button class="buy-btn" id="buy-vlookup">Beli (15)</button>
         </div>
-    </div>
 
-    <div id="lead-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeLeaderboard()">&times;</span>
-            <h3 style="color:#107c41; margin-top: 0; border-bottom: 2px solid #107c41; padding-bottom: 10px;">📊 Papan Peringkat Global</h3>
-            
-            <div class="leaderboard-title">🏆 Data Terbanyak Di Input!</div>
-            <ol id="leaderboard-data"><li>Memuat data...</li></ol>
-
-            <div class="leaderboard-title">⏱️ Waktu Teratas Dimainkan!</div>
-            <ol id="leaderboard-time"><li>Memuat data...</li></ol>
+        <!-- Upgrade 2 -->
+        <div class="upgrade-card">
+            <div class="upgrade-info">
+                <div class="upgrade-name">Anak Magang</div>
+                <div class="upgrade-desc">Auto +5 data/detik</div>
+            </div>
+            <button class="buy-btn" id="buy-magang">Beli (100)</button>
         </div>
-    </div>
 
-    <div id="ach-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeAchievements()">&times;</span>
-            <h3 style="color:#107c41; margin-top: 0; border-bottom: 2px solid #ffb900; padding-bottom: 10px;">🏆 Ruang Pencapaian</h3>
-            <div id="achifications-list"></div>
+        <!-- Upgrade 3 -->
+        <div class="upgrade-card">
+            <div class="upgrade-info">
+                <div class="upgrade-name">Macro VBA & AI</div>
+                <div class="upgrade-desc">Auto +25 data/detik</div>
+            </div>
+            <button class="buy-btn" id="buy-vba">Beli (500)</button>
         </div>
-    </div>
-
-    <div id="ads-screen" class="ads-overlay">
-        <div>📺 Sedang memuat Iklan Pelatihan Pajak...</div>
-        <div class="ads-countdown" id="ad-timer">5</div>
-        <div style="font-size: 13px; margin-top: 10px; color: #aaa;">Simulasi Iklan Berhadiah</div>
     </div>
 
     <script>
-        // === KONFIGURASI FIREBASE ASLI KAMU ===
-        const firebaseConfig = {
-            apiKey: "AIzaSyAx2olUz_YYLEoY-GGCAXGGIwFArixUJvA",
-            authDomain: "excel-clicker.firebaseapp.com",
-            databaseURL: "https://excel-clicker-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "excel-clicker",
-            storageBucket: "excel-clicker.firebasestorage.app",
-            messagingSenderId: "14164257498",
-            appId: "1:14164257498:web:8067ac5d301f447e95d3e3",
-            measurementId: "G-J0B5DSHNDJ"
+        // Data Game Utama
+        let gameData = {
+            score: 0,
+            rebirth: 0,
+            vlookupQty: 0,
+            magangQty: 0,
+            vbaQty: 0
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        // Biaya Dasar Upgrade
+        const COSTS = { vlookup: 15, magang: 100, vba: 500, rebirthBase: 25000 };
 
-        // Data Game Dasar
-        let playerName = "";
-        let dataInputted = 0;
-        let dataPerSecond = 0;
-        let totalDataEver = 0;
-        let totalPlayTime = 0; 
+        // Elemen DOM
+        const scoreEl = document.getElementById('score-text');
+        const rankEl = document.getElementById('rank-text');
+        const rebirthEl = document.getElementById('rebirth-text');
+        const clickPowerEl = document.getElementById('click-power-text');
+        const dpsEl = document.getElementById('dps-text');
         
-        let rebirthCount = 0;
-        let clickPower = 1;
+        const clickBtn = document.getElementById('click-trigger');
+        const rebirthBtn = document.getElementById('rebirth-trigger');
+        const btnVlookup = document.getElementById('buy-vlookup');
+        const btnMagang = document.getElementById('buy-magang');
+        const btnVba = document.getElementById('buy-vba');
 
-        let isBuffActive = false;
-        let buffTimeRemaining = 0;
-
-        let upgrades = {
-            1: { cost: 15, dps: 1, level: 0, baseCost: 15 },
-            2: { cost: 100, dps: 5, level: 0, baseCost: 100 },
-            3: { cost: 500, dps: 25, level: 0, baseCost: 500 },
-            4: { cost: 3000, dps: 100, level: 0, baseCost: 3000 }
-        };
-
-        const achievementRules = [
-            { id: "ach_1", req: 100, name: "Karyawan Baru Teladan", desc: "Berhasil menginput 100 baris data.", icon: "📝" },
-            { id: "ach_2", req: 5000, name: "Master Capek Jempol", desc: "Berhasil menginput 5.000 baris data.", icon: "⚡" },
-            { id: "ach_3", req: 25000, name: "Kandidat Rebirth Kantor", desc: "Berhasil membuka syarat melakukan Rebirth.", icon: "⏳" },
-            { id: "ach_4", req: 500000, name: "Penguasa Korporat Gabut", desc: "Mencapai total 500.000 baris data.", icon: "👑" }
-        ];
-
-        const dataCountEl = document.getElementById('data-count');
-        const dpsCountEl = document.getElementById('dps-count');
-        const clickBtn = document.getElementById('excel-btn');
-        const rankTextEl = document.getElementById('rank-text');
-        const saveStatusEl = document.getElementById('save-status');
-        const playtimeTextEl = document.getElementById('playtime-text');
-        
-        const nameInterface = document.getElementById('name-interface');
-        const gameInterface = document.getElementById('game-interface');
-        const leadModal = document.getElementById('lead-modal');
-        const achModal = document.getElementById('ach-modal');
-
-        function formatTime(seconds) {
-            if (seconds < 60) return seconds + "s";
-            let m = Math.floor(seconds / 60);
-            let s = seconds % 60;
-            if (m < 60) return m + "m " + s + "s";
-            let h = Math.floor(m / 60);
-            m = m % 60;
-            return h + "j " + m + "m";
+        // Mengambil data simpanan lokals
+        function loadData() {
+            const saved = localStorage.getItem('excel_clicker_save');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed) gameData = { ...gameData, ...parsed };
+                } catch(e) { console.error("Gagal load data", e); }
+            }
+            refreshUI();
         }
 
-        function submitPlayerName() {
-            const inputVal = document.getElementById('username-field').value.trim();
-            
+        function saveData() {
+            localStorage.setItem('excel_clicker_save', JSON.stringify(gameData));
+        }
+
+        // Hitung total DPS (Data Per Second)
+        function hitungDPS() {
+            let baseDps = (gameData.vlookupQty * 1) + (gameData.magangQty * 5) + (gameData.vbaQty * 25);
+            return baseDps * (1 + gameData.rebirth);
+        }
+
+        // Hitung kekuatan klik
+        function hitungClickPower() {
+            return (1 + gameData.rebirth);
+        }
+
+        // Hitung biaya dinamis
+        function hitungBiaya(base, qty) {
+            return Math.floor(base * Math.pow(1.15, qty));
+        }
+
+        function hitungBiayaRebirth() {
+            return COSTS.rebirthBase * (gameData.rebirth + 1);
+        }
+
+        // Update teks tampilan layar
+        function refreshUI() {
+            const currentDps = hitungDPS();
+            const currentClick = hitungClickPower();
+            const rebirthCost = hitungBiayaRebirth();
+
+            scoreEl.textContent = Math.floor(gameData.score).toLocaleString('id-ID');
+            clickPowerEl.textContent = `+${currentClick} Baris`;
+            dpsEl.textContent = `+${currentDps} data/detik`;
+            rebirthEl.textContent = `${gameData.rebirth}x (Multiplier: x${1 + gameData.rebirth})`;
+
+            // Update Jabatan berdasarkan Rebirth
+            if (gameData.rebirth >= 5) rankEl.textContent = "Direktur Utama Gabut";
+            else if (gameData.rebirth >= 3) rankEl.textContent = "Manajer Sistem Informasi";
+            else if (gameData.rebirth >= 1) rankEl.textContent = "Staff Administrasi Senior";
+            else rankEl.textContent = "Anak Magang Fotokopi";
+
+            // Atur tombol upgrade
+            const costVlookup = hitungBiaya(COSTS.vlookup, gameData.vlookupQty);
+            btnVlookup.textContent = `Beli (${costVlookup.toLocaleString('id-ID')})`;
+            btnVlookup.disabled = gameData.score < costVlookup;
+
+            const costMagang = hitungBiaya(COSTS.magang, gameData.magangQty);
+            btnMagang.textContent = `Beli (${costMagang.toLocaleString('id-ID')})`;
+            btnMagang.disabled = gameData.score < costMagang;
+
+            const costVba = hitungBiaya(COSTS.vba, gameData.vbaQty);
+            btnVba.textContent = `Beli (${costVba.toLocaleString('id-ID')})`;
+            btnVba.disabled = gameData.score < costVba;
+
+            // Atur tombol Rebirth
+            if (gameData.score >= rebirthCost) {
+                rebirthBtn.disabled = false;
+                rebirthBtn.textContent = `REBIRTH (Siap! -${rebirthCost.toLocaleString('id-ID')})`;
+            } else {
+                rebirthBtn.disabled = true;
+                rebirthBtn.textContent = `Butuh ${rebirthCost.toLocaleString('id-ID')} Data`;
+            }
+        }
+
+        // Event Listener Tombol Utama
+        clickBtn.addEventListener('click', () => {
+            gameData.score += hitungClickPower();
+            refreshUI();
+            saveData();
+        });
+
+        btnVlookup.addEventListener('click', () => {
+            const cost = hitungBiaya(COSTS.vlookup, gameData.vlookupQty);
+            if (gameData.score >= cost) {
+                gameData.score -= cost;
+                gameData.vlookupQty++;
+                refreshUI();
+                saveData();
+            }
+        });
+
+        btnMagang.addEventListener('click', () => {
+            const cost = hitungBiaya(COSTS.magang, gameData.magangQty);
+            if (gameData.score >= cost) {
+                gameData.score -= cost;
+                gameData.magangQty++;
+                refreshUI();
+                saveData();
+            }
+        });
+
+        btnVba.addEventListener('click', () => {
+            const cost = hitungBiaya(COSTS.vba, gameData.vbaQty);
+            if (gameData.score >= cost) {
+                gameData.score -= cost;
+                gameData.vbaQty++;
+                refreshUI();
+                saveData();
+            }
+        });
+
+        rebirthBtn.addEventListener('click', () => {
+            const cost = hitungBiayaRebirth();
+            if (gameData.score >= cost) {
+                gameData.score = 0;
+                gameData.vlookupQty = 0;
+                gameData.magangQty = 0;
+                gameData.vbaQty = 0;
+                gameData.rebirth += 1;
+                refreshUI();
+                saveData();
+                alert("Selamat! Rebirth sukses, jabatan naik dan multiplier klik meningkat! 🎉");
+            }
+        });
+
+        // Loop Game berjalan setiap 1 detik untuk Automasi
+        setInterval(() => {
+            gameData.score += (hitungDPS() / 10);
+            refreshUI();
+        }, 100);
+
+        // Autosave tiap 10 detik
+        setInterval(saveData, 10000);
+
+        // Inisialisasi awal saat halaman dibuka
+        window.onload = loadData;
+    </script>
+</body>
+</html>
