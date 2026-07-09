@@ -8,21 +8,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-    <!-- Google H5 Games Ads SDK (Mode Sandbox / Test Ads) -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-test" crossorigin="anonymous"></script>
-    <script>
-        window.adsbygoogle = window.adsbygoogle || [];
-        var adBreak = adConfig = function(o) { adsbygoogle.push(o); }
-        
-        // Mengaktifkan sistem preload iklan uji coba
-        adConfig({
-            preloadAdBreaks: 'on',
-            onInitialisationComplete: function() {
-                console.log('Google H5 SDK Berhasil Dimuat dalam Mode Tes!');
-            }
-        });
-    </script>
-
     <style>
         * {
             box-sizing: border-box;
@@ -73,7 +58,8 @@
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: transform 0.2s, background-color 0.2s;
-            flex: 1;
+            width: 100%;
+            max-width: 280px;
             text-align: center;
         }
         .leaderboard-btn:hover {
@@ -81,19 +67,7 @@
             transform: scale(1.03);
         }
 
-        .trophy-btn {
-            background-color: #ffb900;
-            border: none;
-            font-size: 20px;
-            padding: 8px 14px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            transition: transform 0.2s;
-        }
-        .trophy-btn:hover { transform: scale(1.1) rotate(10deg); }
-
-        /* TOMBOL FEEDBACK BULAT DI KIRI ATAS LAYAR */
+        /* TOMBOL FEEDBACK BULAT DI POJOK KIRI ATAS LAYAR */
         .feedback-trigger-btn {
             position: fixed;
             top: 20px;
@@ -116,6 +90,29 @@
         .feedback-trigger-btn:hover {
             background-color: #005a9e;
             transform: scale(1.1);
+        }
+
+        /* TOMBOL TROPHY/ACHIEVEMENTS BULAT DI POJOK KANAN ATAS LAYAR */
+        .trophy-trigger-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ffb900;
+            border: none;
+            font-size: 22px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .trophy-trigger-btn:hover { 
+            transform: scale(1.1) rotate(10deg); 
         }
 
         .rank-badge {
@@ -203,29 +200,6 @@
         #excel-btn:hover { background-color: #148f4c; }
         #excel-btn:active { transform: translateY(5px); box-shadow: none; }
 
-        /* GAYA TOMBOL IKLAN SANDBOX GOOGLE */
-        #ad-btn {
-            background-color: #ffb900;
-            color: #222;
-            border: none;
-            padding: 12px 20px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.1s, background-color 0.2s;
-            box-shadow: 0 4px 0 #cc9400;
-            margin-top: 15px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        #ad-btn:hover { background-color: #ffa500; }
-        #ad-btn:active { transform: translateY(4px); box-shadow: none; }
-        #ad-btn:disabled { background-color: #ccc; box-shadow: none; cursor: not-allowed; color: #666; }
-
         #rebirth-btn {
             background-color: #a0a0a0;
             color: white;
@@ -280,7 +254,6 @@
         }
         .redeem-btn:hover { background-color: #005a9e; }
 
-        /* GAYA AREA MODAL KOTAK SARAN */
         .feedback-form-container {
             display: flex;
             flex-direction: column;
@@ -380,7 +353,6 @@
         ol { padding-left: 20px; margin: 0 0 15px 0; font-size: 13px; }
         li { margin-bottom: 5px; border-bottom: 1px dashed #eee; padding-bottom: 3px; }
 
-        /* MODAL WINDOWS */
         .modal {
             display: none; 
             position: fixed;
@@ -479,14 +451,13 @@
 </head>
 <body>
 
-    <!-- TOMBOL STRUKTUR BULAT UTK FEEDBACK -->
     <button class="feedback-trigger-btn" onclick="openFeedbackModal()" title="Kirim Masukan">✉️</button>
+    <button class="trophy-trigger-btn" onclick="openAchievements()" title="Lihat Pencapaian">🏆</button>
 
     <h1>Excel Clicker 🧮</h1>
     
     <div class="top-menu-container">
         <button class="leaderboard-btn" onclick="openLeaderboard()">🏆 Lihat Leaderboard Publik</button>
-        <button class="trophy-btn" onclick="openAchievements()" title="Lihat Pencapaian">🏆</button>
     </div>
     
     <div class="rank-badge">Jabatan: <span id="rank-text">Anak Magang Fotokopi</span></div>
@@ -501,13 +472,10 @@
             
             <button id="excel-btn">INPUT DATA (Spam Klik!)</button>
             
-            <!-- TOMBOL INTEGRASI IKLAN GOOGLE H5 (SANDBOX) -->
-            <button id="ad-btn" onclick="showRewardedAd()">📺 Nonton Iklan (Bonus +50k Data Gratis!)</button>
-            
             <button id="rebirth-btn" onclick="triggerRebirth()">🔒 Resign Kerja (Butuh Jabatan CEO & 500k Data)</button>
 
             <div class="redeem-container">
-                <input text="text" id="redeem-input" class="redeem-input" placeholder="Masukkan Kode Redeem...">
+                <input type="text" id="redeem-input" class="redeem-input" placeholder="Masukkan Kode Redeem...">
                 <button class="redeem-btn" onclick="claimRedeemCode()">Redeem</button>
             </div>
         </div>
@@ -530,7 +498,6 @@
 
     <div class="subtitle">Misi: Menginput seluruh data di dunia sambil gabut.</div>
 
-    <!-- WINDOW MODAL UNTUK KOTAK MASUKAN -->
     <div id="feedback-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeFeedbackModal()">&times;</span>
@@ -762,63 +729,6 @@
             updateUI(); updateUpgradeButtons();
         });
 
-        // LOGIKA BARU: INTERFACES & EKSEKUSI IKLAN GOOGLE REWARDED (SANDBOX MODE)
-        function showRewardedAd() {
-    const adBtn = document.getElementById('ad-btn');
-    adBtn.disabled = true;
-    adBtn.innerText = "⏳ Memuat Iklan Google...";
-
-    // Pengaman: Jika dalam 5 detik Google tidak merespon, batalkan otomatis agar game tidak macet
-    const adTimeout = setTimeout(() => {
-        if (adBtn.disabled && adBtn.innerText.includes("Memuat")) {
-            console.log('Google SDK Timeout atau diblokir AdBlocker. Menjalankan fallback simulasi.');
-            adBtn.disabled = false;
-            adBtn.innerText = "📺 Nonton Iklan (Bonus +50k Data Gratis!)";
-            
-            // Tetap berikan hadiah demi kelancaran testing jika SDK Google diblokir browser
-            alert("⚠️ Google Sandbox tidak merespon (Mungkin terblokir AdBlock). Menggunakan sistem simulasi data +50.000!");
-            giveRewardData();
-        }
-    }, 5000);
-
-    // Panggilan sistem penayangan iklan dari Google SDK
-    adBreak({
-        type: 'reward',
-        name: 'bonus_data_50k',
-        beforeAd: function() {
-            clearTimeout(adTimeout); // Batalkan timeout jika iklan berhasil muncul
-            console.log('Iklan Sandbox Google ditampilkan.');
-        },
-        afterAd: function() {
-            adBtn.disabled = false;
-            adBtn.innerText = "📺 Nonton Iklan (Bonus +50k Data Gratis!)";
-        },
-        beforeReward: function(showAdFn) {
-            showAdFn(); 
-        },
-        adDismissed: function() {
-            alert("Kamu harus menonton iklan hingga selesai agar bonus data masuk!");
-        },
-        adViewed: function() {
-            clearTimeout(adTimeout);
-            alert("🎉 Kode Sandbox Sukses! Bonus +50.000 baris data dimasukkan.");
-            giveRewardData();
-        }
-    });
-}
-
-// Fungsi terpisah untuk membagikan data agar kode lebih rapi
-function giveRewardData() {
-    let adReward = 50000;
-    dataInputted += adReward;
-    totalDataEver += adReward;
-    
-    recalculateDPS();
-    saveGame();
-    updateUI();
-    updateUpgradeButtons();
-}
-
         function buyUpgrade(id) {
             let upgrade = upgrades[id]; let mods = getAchievementModifiers();
             let finalCost = Math.floor(upgrade.cost * mods.discount);
@@ -906,7 +816,7 @@ function giveRewardData() {
                     message: text,
                     timestamp: new Date().toLocaleString('id-ID')
                 }).then(() => {
-                    alert("🎉 Terima kasih banyak! Masukan kamu sudah dikirim secara privat ke AJ (Developer).");
+                    alert("🎉 Terima kasih banyak! Masukan kamu sudah dikirim secara privat.");
                     inputEl.value = "";
                     closeFeedbackModal();
                 }).catch(() => {
@@ -946,7 +856,6 @@ function giveRewardData() {
         }
         function closeAdminModal() { adminModal.className = 'modal'; }
 
-        // MANAJEMEN MODAL KOTAK SARAN BARU
         function openFeedbackModal() { feedbackModal.className = 'modal show'; }
         function closeFeedbackModal() { feedbackModal.className = 'modal'; }
 
